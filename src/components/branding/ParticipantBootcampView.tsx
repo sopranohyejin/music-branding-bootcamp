@@ -41,8 +41,6 @@ import Toast from './Toast';
 type ActiveTab = 'week1' | 'week2' | 'week3' | 'week4' | 'final';
 type SaveStatus = 'idle' | 'saving' | 'saved' | 'error';
 
-const CACHE_KEY = 'bootcamp_current_participant';
-
 function tabStyle(isActive: boolean) {
   return {
     background: isActive ? '#FFF2A8' : '#ffffff',
@@ -73,32 +71,6 @@ export default function ParticipantBootcampView() {
   const [saveStatus, setSaveStatus] = useState<SaveStatus>('idle');
   const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const idleTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  // ── 마운트 시 localStorage 캐시 확인 → Supabase 복원 ──────
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-    const cached = localStorage.getItem(CACHE_KEY);
-    if (!cached) return;
-    try {
-      const { participantDbId: cachedId, participantName: cachedName } = JSON.parse(cached);
-      if (!cachedId || !cachedName) return;
-      setParticipantDbId(cachedId);
-      setParticipantName(cachedName);
-      setAppState('loading');
-      getOrCreateSubmission(cachedId)
-        .then((sub) => {
-          saveSubmission(sub);
-          setSubmission(sub);
-          setAppState('ready');
-        })
-        .catch(() => {
-          localStorage.removeItem(CACHE_KEY);
-          setAppState('login');
-        });
-    } catch {
-      setAppState('login');
-    }
-  }, []);
 
   // ── 타이머 정리 ────────────────────────────────────────────
   useEffect(() => {
@@ -165,11 +137,6 @@ export default function ParticipantBootcampView() {
         return;
       }
 
-      // localStorage 캐시 저장
-      localStorage.setItem(CACHE_KEY, JSON.stringify({
-        participantDbId: participant.id,
-        participantName: participant.name,
-      }));
       saveSubmission(sub);
 
       setParticipantDbId(participant.id);
