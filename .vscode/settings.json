@@ -1,0 +1,9 @@
+{
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.formatOnSave": true,
+  "editor.tabSize": 2,
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "liveServer.settings.port": 3000,
+  "liveServer.settings.root": "/",
+  "explorer.openEditors.visible": 0
+}

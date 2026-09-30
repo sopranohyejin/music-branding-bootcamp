@@ -1,36 +1,65 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 음악인 브랜딩 부트캠프
 
-## Getting Started
+## 실행 방법
 
-First, run the development server:
+### 방법 1 — 더블클릭 (가장 쉬움)
 
-```bash
+프로젝트 루트의 **`시작.bat`** 파일을 더블클릭하면:
+1. 개발 서버 자동 실행
+2. 5초 후 브라우저에서 `http://localhost:3000/branding-bootcamp?participantId=p001` 자동 오픈
+
+---
+
+### 방법 2 — VS Code 터미널
+
+```
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+`✓ Ready in ...` 메시지가 뜨면 아래 주소로 접속합니다.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 접속 주소
 
-## Learn More
+| 용도 | 주소 |
+|------|------|
+| 참가자 p001 (김혜민) | http://localhost:3000/branding-bootcamp?participantId=p001 |
+| 참가자 p002 | http://localhost:3000/branding-bootcamp?participantId=p002 |
+| 참가자 p003 | http://localhost:3000/branding-bootcamp?participantId=p003 |
+| ... ~ p050까지 지원 | http://localhost:3000/branding-bootcamp?participantId=p050 |
+| 관리자 페이지 | http://localhost:3000/branding-bootcamp/admin |
 
-To learn more about Next.js, take a look at the following resources:
+---
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 참가자 이름 변경
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+[src/lib/brandingBootcamp.ts](src/lib/brandingBootcamp.ts) 파일의 `MOCK_PARTICIPANTS` 배열에서 수정:
 
-## Deploy on Vercel
+```ts
+export const MOCK_PARTICIPANTS: Participant[] = [
+  { id: 'p001', name: '김혜민', ... },  // ← 이름 수정
+  { id: 'p002', name: '홍길동', ... },
+  ...
+];
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+---
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 미션 공개 날짜 변경
+
+[src/lib/brandingBootcamp.ts](src/lib/brandingBootcamp.ts) 파일의 `WEEKS` 배열에서 날짜 수정:
+
+```ts
+releaseDate: '2026-10-05T00:00:00+09:00',  // 이 날짜 이후부터 미션 공개
+lectureDate: '2026-10-05T21:00:00+09:00',  // 카운트다운 기준 강의 시간
+```
+
+---
+
+## 주의사항 (MVP 한계)
+
+현재 버전은 **localStorage 기반**입니다.
+- 각 참가자 데이터가 해당 참가자의 브라우저에만 저장됩니다.
+- 관리자 페이지에서 다른 기기 참가자의 답변을 볼 수 없습니다.
+- 실제 운영 전에 Supabase 또는 Firebase DB 연결이 필요합니다.
