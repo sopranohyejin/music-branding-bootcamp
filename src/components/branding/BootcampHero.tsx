@@ -263,11 +263,11 @@ export default function BootcampHero({ participantName, completedWeeks }: Bootca
                         : released
                         ? 'rgba(255,255,255,0.80)'
                         : 'rgba(255,255,255,0.30)',
-                      maxWidth: '88px',
+                      maxWidth: week.id === 'week3' ? '104px' : '88px',
                     }}
                   >
                     {week.id === 'week3' ? (
-                      <>고객 문제와<br />30초 셀프 스피치</>
+                      <>고객 문제와 30초<br />셀프 스피치</>
                     ) : week.id === 'week4' ? (
                       <>나의 신용 자산<br />만들기</>
                     ) : (
