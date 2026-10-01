@@ -77,27 +77,22 @@ export default function BootcampHero({ participantName, completedWeeks }: Bootca
         className="absolute pointer-events-none select-none hidden sm:block"
         style={{
           /* 위치: 히어로 오른쪽 상단~중단 빈 공간 */
-          top: '2%',
-          right: 'clamp(80px, 10vw, 200px)',
-          /* 크기: vw 기반 반응형, 최소 520 · 최대 920 */
-          width: 'clamp(520px, 48vw, 920px)',
+          top: '10%',
+          right: 'clamp(0px, 2vw, 40px)',
+          /* 크기: 1.5배 확대 */
+          width: 'clamp(780px, 72vw, 1380px)',
           height: 'auto',
-          opacity: 0.78,
+          opacity: 0.82,
           mixBlendMode: 'screen',
-          /*
-           * 4방향 마스크 교차:
-           * gradient1 — 좌(14%까지 페이드인) + 우(78%부터 페이드아웃) 경계 제거
-           * gradient2 — 상(12%까지 페이드인) + 하(82%부터 페이드아웃) 경계 제거
-           * composite: intersect(destination-in) → 두 마스크의 교집합만 노출
-           */
+          /* 좌·상·하만 페이드, 우측은 배경색과 자연스럽게 */
           WebkitMaskImage: [
-            'linear-gradient(to right, transparent 0%, black 14%, black 78%, transparent 100%)',
-            'linear-gradient(to bottom, transparent 0%, black 12%, black 82%, transparent 100%)',
+            'linear-gradient(to right, transparent 0%, black 10%, black 100%)',
+            'linear-gradient(to bottom, transparent 0%, black 8%, black 85%, transparent 100%)',
           ].join(', '),
           WebkitMaskComposite: 'destination-in',
           maskImage: [
-            'linear-gradient(to right, transparent 0%, black 14%, black 78%, transparent 100%)',
-            'linear-gradient(to bottom, transparent 0%, black 12%, black 82%, transparent 100%)',
+            'linear-gradient(to right, transparent 0%, black 10%, black 100%)',
+            'linear-gradient(to bottom, transparent 0%, black 8%, black 85%, transparent 100%)',
           ].join(', '),
           maskComposite: 'intersect',
         }}
@@ -122,8 +117,8 @@ export default function BootcampHero({ participantName, completedWeeks }: Bootca
         </div>
 
         {/* ── 타이틀 ── */}
-        <h1 className="text-3xl md:text-5xl font-bold leading-tight mb-6 tracking-tight">
-          <span className="text-white">소득없는 음악인,</span>
+        <h1 className="text-3xl md:text-5xl font-black leading-tight mb-6 tracking-tight">
+          <span className="text-white">소득없는 음악인</span>
           <br />
           <span style={{ color: '#FFF2A8' }}>소득있는 음악인</span>
           <span className="text-white">으로!</span>
