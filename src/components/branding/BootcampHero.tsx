@@ -80,7 +80,7 @@ export default function BootcampHero({ participantName, completedWeeks }: Bootca
           /* 오른쪽 끝에서 안쪽으로: 손잡이가 화면 오른쪽 20% 지점에 오도록 */
           right: 'clamp(30px, 6vw, 100px)',
           /* 크기 유지 (반응형 vw 기반) */
-          width: 'clamp(780px, 72vw, 1380px)',
+          width: 'clamp(546px, 50vw, 966px)',
           height: 'auto',
           opacity: 0.92,
           /*
@@ -309,8 +309,8 @@ export default function BootcampHero({ participantName, completedWeeks }: Bootca
           <div
             className="mt-10 rounded-2xl p-5"
             style={{
-              border: '1px solid rgba(180,120,0,0.5)',
-              background: 'rgba(220,158,0,0.93)',
+              border: '1px solid rgba(200,170,0,0.5)',
+              background: 'rgba(255,224,50,0.97)',
               boxShadow: '0 4px 20px rgba(0,0,0,0.25)',
             }}
           >
