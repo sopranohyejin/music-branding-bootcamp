@@ -61,8 +61,6 @@ export default function BootcampHero({ participantName, completedWeeks }: Bootca
       {/* ── 도트 그리드 텍스처 ── */}
       <div className="absolute inset-0 pointer-events-none" style={{ backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.06) 1px, transparent 1px)', backgroundSize: '28px 28px' }} />
 
-      {/* ── 골드 글로우 라인 ── */}
-      <div className="absolute pointer-events-none" style={{ top: '42%', left: '0', right: '0', height: '1px', background: 'linear-gradient(to right, transparent 0%, rgba(230,210,122,0.20) 30%, rgba(230,210,122,0.10) 70%, transparent 100%)' }} />
 
       {/* ── 음악 사인파 (하단) ── */}
       <svg className="absolute bottom-0 left-0 right-0 pointer-events-none" viewBox="0 0 1200 80" preserveAspectRatio="none" style={{ width: '100%', height: '80px', opacity: 0.15 }} aria-hidden="true">
@@ -70,40 +68,40 @@ export default function BootcampHero({ participantName, completedWeeks }: Bootca
         <path d="M0,45 C80,5 160,75 240,45 C320,5 400,75 480,45 C560,5 640,75 720,45 C800,5 880,75 960,45 C1040,5 1120,75 1200,45" fill="none" stroke="rgba(230,210,122,0.35)" strokeWidth="1.5" />
       </svg>
 
-      {/* ── 이퀄라이저 (우측 중앙) ── */}
-      <svg className="absolute right-8 top-1/2 pointer-events-none hidden md:block" viewBox="0 0 60 120" style={{ width: '60px', height: '120px', transform: 'translateY(-50%)', opacity: 0.15 }} aria-hidden="true">
-        {[0, 12, 24, 36, 48].map((x, i) => {
-          const h = [60, 90, 45, 75, 55][i];
-          return <rect key={i} x={x} y={120 - h} width="8" height={h} rx="4" fill="#E6D27A" />;
-        })}
-      </svg>
-
-      {/* ── 지니 램프 배경 장식 (우하단) ── */}
-      <svg
-        className="absolute pointer-events-none hidden sm:block"
-        viewBox="0 0 300 260"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-        style={{ bottom: '-10px', right: '30px', width: '260px', height: 'auto', opacity: 0.08 }}
+      {/* ── 지니 램프 + 은하수 배경 이미지 ── */}
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src="/genie-lamp-bg.png"
+        alt=""
         aria-hidden="true"
-      >
-        {/* 램프 몸통 */}
-        <path d="M92,172 C87,142 98,112 128,97 C158,82 200,85 222,106 C244,127 240,158 222,175 C204,192 168,200 138,197 C108,194 97,202 92,172Z" stroke="#E6D27A" strokeWidth="2.2" />
-        {/* 목 */}
-        <path d="M122,97 C118,82 126,67 138,59 C150,51 166,50 174,61 C182,72 170,85 155,97" stroke="#E6D27A" strokeWidth="2" fill="none" />
-        {/* 뚜껑 */}
-        <ellipse cx="148" cy="58" rx="28" ry="9" stroke="#E6D27A" strokeWidth="2" />
-        <path d="M128,49 C128,40 137,33 148,33 C159,33 168,40 168,49" stroke="#E6D27A" strokeWidth="1.8" fill="none" />
-        {/* 주둥이 (좌) */}
-        <path d="M92,152 C74,140 53,120 37,100 C24,85 33,68 48,77 C59,84 69,108 85,140" stroke="#E6D27A" strokeWidth="2" fill="none" />
-        {/* 손잡이 (우) */}
-        <path d="M222,138 C252,125 264,96 247,78 C236,66 218,73 222,93" stroke="#E6D27A" strokeWidth="2" fill="none" />
-        {/* 받침 */}
-        <path d="M102,197 C102,216 118,228 145,228 C172,228 190,216 190,197" stroke="#E6D27A" strokeWidth="1.8" fill="none" />
-        <ellipse cx="146" cy="229" rx="44" ry="7" stroke="#E6D27A" strokeWidth="1.4" opacity="0.55" />
-        {/* 불꽃 */}
-        <path d="M142,33 C138,17 146,5 149,-2 C152,5 158,12 155,24 C152,33 144,37 142,33Z" stroke="#E6D27A" strokeWidth="1.5" fill="none" opacity="0.75" />
-      </svg>
+        className="absolute pointer-events-none select-none hidden sm:block"
+        style={{
+          /* 위치: 히어로 오른쪽 상단~중단 빈 공간 */
+          top: '2%',
+          right: 'clamp(80px, 10vw, 200px)',
+          /* 크기: vw 기반 반응형, 최소 520 · 최대 920 */
+          width: 'clamp(520px, 48vw, 920px)',
+          height: 'auto',
+          opacity: 0.78,
+          mixBlendMode: 'screen',
+          /*
+           * 4방향 마스크 교차:
+           * gradient1 — 좌(14%까지 페이드인) + 우(78%부터 페이드아웃) 경계 제거
+           * gradient2 — 상(12%까지 페이드인) + 하(82%부터 페이드아웃) 경계 제거
+           * composite: intersect(destination-in) → 두 마스크의 교집합만 노출
+           */
+          WebkitMaskImage: [
+            'linear-gradient(to right, transparent 0%, black 14%, black 78%, transparent 100%)',
+            'linear-gradient(to bottom, transparent 0%, black 12%, black 82%, transparent 100%)',
+          ].join(', '),
+          WebkitMaskComposite: 'destination-in',
+          maskImage: [
+            'linear-gradient(to right, transparent 0%, black 14%, black 78%, transparent 100%)',
+            'linear-gradient(to bottom, transparent 0%, black 12%, black 82%, transparent 100%)',
+          ].join(', '),
+          maskComposite: 'intersect',
+        }}
+      />
 
       <div className="relative max-w-3xl mx-auto px-6 py-16 md:py-24">
 
@@ -155,8 +153,6 @@ export default function BootcampHero({ participantName, completedWeeks }: Bootca
           <span className="font-bold" style={{ color: '#FFF2A8' }}>{participantName}</span>
         </p>
 
-        {/* ── 구분선 ── */}
-        <div className="mb-8" style={{ height: '1px', background: 'linear-gradient(to right, transparent, rgba(255,255,255,0.12) 40%, rgba(255,255,255,0.06) 60%, transparent)' }} />
 
         {/* ── 미션 진행 현황 (주차별 스텝) ── */}
         <div className="mb-10">
@@ -165,17 +161,6 @@ export default function BootcampHero({ participantName, completedWeeks }: Bootca
           </p>
 
           <div className="relative flex justify-between items-start px-2">
-            {/* 연결선 */}
-            <div
-              className="absolute pointer-events-none"
-              style={{
-                top: '26px',
-                left: '12.5%',
-                right: '12.5%',
-                height: '1px',
-                background: 'linear-gradient(to right, rgba(230,210,122,0.12), rgba(230,210,122,0.28), rgba(230,210,122,0.12))',
-              }}
-            />
 
             {WEEKS.map((week, i) => {
               const released = mounted && isWeekReleased(week);
