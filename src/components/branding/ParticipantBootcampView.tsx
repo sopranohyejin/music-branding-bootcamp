@@ -6,6 +6,7 @@ import {
   saveSubmission,
   isWeekReleased,
   WEEKS,
+  TEST_MODE,
   CommonMissions,
   Week1Data,
   Week2Data,
@@ -381,6 +382,14 @@ export default function ParticipantBootcampView() {
 
   const releasedWeeks = WEEKS.map((w) => isWeekReleased(w));
 
+  // 다음 주차가 공개되면 해당 주차는 잠금(읽기 전용). TEST_MODE 에서는 항상 편집 가능.
+  function isWeekLocked(weekId: string): boolean {
+    if (TEST_MODE) return false;
+    const idx = WEEKS.findIndex((w) => w.id === weekId);
+    if (idx < 0 || idx >= WEEKS.length - 1) return false;
+    return isWeekReleased(WEEKS[idx + 1]);
+  }
+
   // ── 메인 렌더 ──────────────────────────────────────────────
   return (
     <div className="bg-[#FFFBEA] min-h-screen">
@@ -436,12 +445,14 @@ export default function ParticipantBootcampView() {
                 updateAndSave({ ...submission, commonMissions: cm })
               }
               onShowToast={showToast}
+              isLocked={isWeekLocked('week1')}
             />
             <div className="border-t pt-10" style={{ borderColor: '#EFE4B0' }}>
               <Week1Form
                 data={submission.weeklyMissions.week1}
                 isReleased={releasedWeeks[0]}
                 completedWeeks={submission.completedWeeks}
+                isLocked={isWeekLocked('week1')}
                 onUpdate={(d: Week1Data) =>
                   updateAndSave({
                     ...submission,
@@ -465,12 +476,14 @@ export default function ParticipantBootcampView() {
                 updateAndSave({ ...submission, commonMissions: cm })
               }
               onShowToast={showToast}
+              isLocked={isWeekLocked('week2')}
             />
             <div className="border-t pt-10" style={{ borderColor: '#EFE4B0' }}>
               <Week2Form
                 data={submission.weeklyMissions.week2}
                 isReleased={releasedWeeks[1]}
                 completedWeeks={submission.completedWeeks}
+                isLocked={isWeekLocked('week2')}
                 onUpdate={(d: Week2Data) =>
                   updateAndSave({
                     ...submission,
@@ -495,12 +508,14 @@ export default function ParticipantBootcampView() {
                 updateAndSave({ ...submission, commonMissions: cm })
               }
               onShowToast={showToast}
+              isLocked={isWeekLocked('week3')}
             />
             <div className="border-t pt-10" style={{ borderColor: '#EFE4B0' }}>
               <Week3Form
                 data={submission.weeklyMissions.week3}
                 isReleased={releasedWeeks[2]}
                 completedWeeks={submission.completedWeeks}
+                isLocked={isWeekLocked('week3')}
                 onUpdate={(d: Week3Data) =>
                   updateAndSave({
                     ...submission,
@@ -524,12 +539,14 @@ export default function ParticipantBootcampView() {
                 updateAndSave({ ...submission, commonMissions: cm })
               }
               onShowToast={showToast}
+              isLocked={isWeekLocked('week4')}
             />
             <div className="border-t pt-10" style={{ borderColor: '#EFE4B0' }}>
               <Week4Form
                 data={submission.weeklyMissions.week4}
                 isReleased={releasedWeeks[3]}
                 completedWeeks={submission.completedWeeks}
+                isLocked={isWeekLocked('week4')}
                 onUpdate={(d: Week4Data) =>
                   updateAndSave({
                     ...submission,
