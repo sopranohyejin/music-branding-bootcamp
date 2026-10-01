@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: '음악인 브랜딩 부트캠프 | 헬퍼지니',
+  title: '헬퍼지니 부트캠프',
   description:
     '음악가가 자기 실력을 상품으로 연결하고, 고객을 이해하고, 선택받는 구조를 만드는 비즈니스 사고 훈련',
   icons: {
