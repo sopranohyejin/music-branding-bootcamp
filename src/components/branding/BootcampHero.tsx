@@ -75,9 +75,9 @@ export default function BootcampHero({ participantName, completedWeeks }: Bootca
         aria-hidden="true"
         className="absolute pointer-events-none select-none hidden sm:block"
         style={{
-          /* 위치: 히어로 오른쪽 상단~중단 빈 공간 */
-          top: '-5%',
-          /* 오른쪽 끝에서 안쪽으로: 손잡이가 화면 오른쪽 20% 지점에 오도록 */
+          /* 위치: 히어로 오른쪽 중단 빈 공간 - 램프 몸통이 히어로 중심에 오도록 */
+          top: '10%',
+          /* 오른쪽 끝에서 안쪽으로 */
           right: 'clamp(30px, 6vw, 100px)',
           /* 크기 유지 (반응형 vw 기반) */
           width: 'clamp(546px, 50vw, 966px)',
@@ -247,8 +247,8 @@ export default function BootcampHero({ participantName, completedWeeks }: Bootca
                       color: completed
                         ? '#FFF2A8'
                         : released
-                        ? 'rgba(255,242,168,0.52)'
-                        : 'rgba(255,255,255,0.20)',
+                        ? 'rgba(255,242,168,0.88)'
+                        : 'rgba(255,255,255,0.45)',
                     }}
                   >
                     {week.label}
@@ -256,17 +256,23 @@ export default function BootcampHero({ participantName, completedWeeks }: Bootca
 
                   {/* 주차 제목 */}
                   <p
-                    className="text-xs leading-snug hidden sm:block"
+                    className="text-xs font-bold leading-snug hidden sm:block"
                     style={{
                       color: completed
-                        ? 'rgba(184,197,217,0.85)'
+                        ? 'rgba(255,255,255,0.95)'
                         : released
-                        ? 'rgba(184,197,217,0.42)'
-                        : 'rgba(255,255,255,0.14)',
+                        ? 'rgba(255,255,255,0.80)'
+                        : 'rgba(255,255,255,0.30)',
                       maxWidth: '88px',
                     }}
                   >
-                    {week.title}
+                    {week.id === 'week3' ? (
+                      <>고객 문제와 30초<br />셀프 스피치</>
+                    ) : week.id === 'week4' ? (
+                      <>나의 신용 자산<br />만들기</>
+                    ) : (
+                      week.title
+                    )}
                   </p>
                 </div>
               );

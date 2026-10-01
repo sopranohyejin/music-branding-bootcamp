@@ -7,6 +7,7 @@ export const metadata: Metadata = {
     '음악가가 자기 실력을 상품으로 연결하고, 고객을 이해하고, 선택받는 구조를 만드는 비즈니스 사고 훈련',
   icons: {
     icon: '/helperjiny-logo.png',
+    shortcut: '/helperjiny-logo.png',
     apple: '/helperjiny-logo.png',
   },
 };
