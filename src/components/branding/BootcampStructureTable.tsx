@@ -5,7 +5,7 @@ import { STRUCTURE_TABLE } from '@/lib/brandingBootcamp';
 export default function BootcampStructureTable() {
   return (
     <section className="max-w-5xl mx-auto px-6 py-12">
-      <h2 className="text-xl font-bold mb-2" style={{ color: '#07152F' }}>음악인 브랜딩 부트캠프 미션</h2>
+      <h2 className="font-bold mb-2" style={{ color: '#07152F', fontSize: '2.5rem' }}>음악인 브랜딩 부트캠프 미션</h2>
       <p className="text-sm text-[#6B7280] mb-6">4주 동안 아래 미션을 순서대로 진행합니다.</p>
 
       {/* Desktop table */}

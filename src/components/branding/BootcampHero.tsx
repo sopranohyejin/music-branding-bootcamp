@@ -82,8 +82,7 @@ export default function BootcampHero({ participantName, completedWeeks }: Bootca
           /* 크기 유지 (반응형 vw 기반) */
           width: 'clamp(780px, 72vw, 1380px)',
           height: 'auto',
-          opacity: 0.82,
-          mixBlendMode: 'screen',
+          opacity: 0.92,
           /*
            * 4방향 마스크:
            * 좌(10%까지 페이드인) · 우(85%부터 페이드아웃, 검은 경계 제거)
@@ -102,7 +101,29 @@ export default function BootcampHero({ participantName, completedWeeks }: Bootca
         }}
       />
 
-      <div className="relative max-w-3xl mx-auto px-6 py-16 md:py-24">
+      {/* ── 카운트다운: 우상단 절대 위치 (데스크탑 전용) ── */}
+      <div className="absolute top-6 right-8 text-right hidden md:flex flex-col items-end z-10 pointer-events-none">
+        {mounted && countdown ? (
+          <>
+            <p className="text-xs font-semibold leading-snug mb-0.5" style={{ color: '#FFFFFF' }}>
+              매주 화요일 21:00 강의
+            </p>
+            <p className="text-xs leading-snug mb-3" style={{ color: 'rgba(255,255,255,0.75)' }}>{nextLectureLabel}</p>
+            <p className="text-3xl font-mono font-bold tabular-nums" style={{ color: '#FFF2A8' }}>
+              {countdown}
+            </p>
+          </>
+        ) : mounted ? (
+          <p className="text-sm font-medium" style={{ color: '#FFFFFF' }}>모든 강의 완료 🎉</p>
+        ) : (
+          <>
+            <p className="text-xs leading-snug mb-3" style={{ color: '#FFFFFF' }}>매주 화요일 21:00 강의</p>
+            <p className="text-3xl font-mono tabular-nums" style={{ color: 'rgba(255,242,168,0.35)' }}>––:––:––</p>
+          </>
+        )}
+      </div>
+
+      <div className="relative max-w-3xl mx-auto px-6 pt-8 pb-16 md:pt-12 md:pb-24">
 
         {/* ── 배지: 헬퍼지니 먼저 ── */}
         <div className="flex flex-wrap items-center gap-2 mb-8">
@@ -121,7 +142,7 @@ export default function BootcampHero({ participantName, completedWeeks }: Bootca
         </div>
 
         {/* ── 타이틀 ── */}
-        <h1 className="text-3xl md:text-5xl font-black leading-tight mb-6 tracking-tight" style={{ textShadow: '0 2px 8px rgba(0,0,0,0.7), 0 6px 32px rgba(0,0,0,0.5), 2px 4px 0 rgba(0,0,0,0.4)' }}>
+        <h1 className="text-5xl md:text-7xl font-black leading-tight mb-6 tracking-tight" style={{ textShadow: '0 2px 8px rgba(0,0,0,0.7), 0 6px 32px rgba(0,0,0,0.5), 2px 4px 0 rgba(0,0,0,0.4)' }}>
           <span className="text-white">소득없는 음악인</span>
           <br />
           <span style={{ color: '#FFF2A8' }}>소득있는 음악인</span>
@@ -253,8 +274,8 @@ export default function BootcampHero({ participantName, completedWeeks }: Bootca
           </div>
         </div>
 
-        {/* ── 카운트다운 ── */}
-        <div className="flex flex-col items-center md:items-end">
+        {/* ── 카운트다운 (모바일 전용 - 데스크탑은 우상단 절대 위치) ── */}
+        <div className="flex flex-col items-center md:hidden">
           {mounted && countdown ? (
             <>
               <div className="flex flex-col gap-0.5 text-center md:text-right mb-4">
@@ -288,17 +309,17 @@ export default function BootcampHero({ participantName, completedWeeks }: Bootca
           <div
             className="mt-10 rounded-2xl p-5"
             style={{
-              border: '1px solid rgba(230,210,122,0.45)',
-              background: 'rgba(10,32,72,0.90)',
-              boxShadow: '0 4px 24px rgba(0,0,0,0.35)',
+              border: '1px solid rgba(180,120,0,0.5)',
+              background: 'rgba(220,158,0,0.93)',
+              boxShadow: '0 4px 20px rgba(0,0,0,0.25)',
             }}
           >
-            <p className="text-xs font-semibold uppercase tracking-wider mb-1" style={{ color: '#F3D96B' }}>
+            <p className="text-xs font-semibold uppercase tracking-wider mb-1" style={{ color: '#07152F' }}>
               현재 진행 중
             </p>
-            <p className="font-bold text-white text-lg">{currentWeek.label} · {currentWeek.title}</p>
-            <p className="text-sm mt-1" style={{ color: '#B8C5D9' }}>{currentWeek.lectureTitle}</p>
-            <p className="text-xs mt-3" style={{ color: '#4A6080' }}>별도 미션: {currentWeek.individualMissionTitle}</p>
+            <p className="font-bold text-lg" style={{ color: '#07152F' }}>{currentWeek.label} · {currentWeek.title}</p>
+            <p className="text-sm mt-1" style={{ color: 'rgba(7,21,47,0.75)' }}>{currentWeek.lectureTitle}</p>
+            <p className="text-xs mt-3" style={{ color: 'rgba(7,21,47,0.6)' }}>별도 미션: {currentWeek.individualMissionTitle}</p>
           </div>
         )}
       </div>

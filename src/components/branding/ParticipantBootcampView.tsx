@@ -404,8 +404,8 @@ export default function ParticipantBootcampView() {
 
       {/* C. 탭 바 */}
       <div
-        className="sticky top-0 z-20 border-b"
-        style={{ background: '#FFFBEA', borderColor: '#EFE4B0' }}
+        className="sticky top-0 z-20 border-b border-t w-full"
+        style={{ background: '#FFE566', borderColor: '#D4B800', boxShadow: '0 2px 8px rgba(180,140,0,0.15)' }}
       >
         <div className="max-w-3xl mx-auto px-6">
           <div className="flex gap-2 py-3 overflow-x-auto">

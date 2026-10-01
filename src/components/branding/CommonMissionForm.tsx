@@ -82,10 +82,10 @@ export default function CommonMissionForm({
     <div>
       {/* 섹션 헤더 */}
       <div className="mb-6">
-        <p className="text-xs uppercase tracking-widest font-semibold mb-1" style={{ color: WARM_YELLOW }}>
+        <p className="uppercase tracking-wide font-bold mb-1" style={{ color: '#08224A', fontSize: '1.5rem' }}>
           공통 미션
         </p>
-        <h2 className="text-xl font-bold" style={{ color: '#07152F' }}>
+        <h2 className="font-bold" style={{ color: '#08224A', fontSize: '2.5rem', lineHeight: 1.2 }}>
           매주 작성: 나의 비즈니스 점검표
         </h2>
         <p className="text-sm text-[#6B7280] mt-2 leading-relaxed">
