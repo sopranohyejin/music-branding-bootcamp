@@ -11,7 +11,10 @@ export default function BootcampStructureTable() {
       {/* Desktop table */}
       <div
         className="hidden md:block overflow-x-auto rounded-2xl"
-        style={{ border: '1px solid #EFE4B0' }}
+        style={{
+          border: '1px solid #EFE4B0',
+          boxShadow: '12px 14px 0 rgba(10,20,50,0.08), 0 8px 28px rgba(10,20,50,0.13)',
+        }}
       >
         <table className="w-full text-sm whitespace-nowrap">
           <thead>
@@ -45,7 +48,7 @@ export default function BootcampStructureTable() {
                   )}
                 </td>
                 <td className="px-4 py-4 font-medium" style={{ color: '#6B7280' }}>{row.schedule}</td>
-                <td className="px-4 py-4 leading-relaxed whitespace-normal" style={{ color: '#374151' }}>{row.lecture}</td>
+                <td className="px-4 py-4 leading-relaxed whitespace-normal font-bold" style={{ color: '#374151' }}>{row.lecture}</td>
                 <td className="px-4 py-4 whitespace-normal" style={{ color: '#374151' }}>{row.individualMission}</td>
                 <td className="px-4 py-4" style={{ color: '#374151' }}>{row.commonMission}</td>
               </tr>
@@ -76,7 +79,7 @@ export default function BootcampStructureTable() {
             <div className="flex flex-col gap-2 text-sm">
               <div>
                 <span className="text-[#6B7280] mr-2">강의</span>
-                <span style={{ color: '#374151' }}>{row.lecture}</span>
+                <span className="font-bold" style={{ color: '#374151' }}>{row.lecture}</span>
               </div>
               <div>
                 <span className="text-[#6B7280] mr-2">별도 미션</span>

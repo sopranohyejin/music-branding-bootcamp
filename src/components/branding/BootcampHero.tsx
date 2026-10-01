@@ -78,20 +78,25 @@ export default function BootcampHero({ participantName, completedWeeks }: Bootca
         style={{
           /* 위치: 히어로 오른쪽 상단~중단 빈 공간 */
           top: '10%',
-          right: 'clamp(0px, 2vw, 40px)',
-          /* 크기: 1.5배 확대 */
+          /* 오른쪽 끝에서 안쪽으로: 손잡이가 화면 오른쪽 20% 지점에 오도록 */
+          right: 'clamp(120px, 20vw, 360px)',
+          /* 크기 유지 (반응형 vw 기반) */
           width: 'clamp(780px, 72vw, 1380px)',
           height: 'auto',
           opacity: 0.82,
           mixBlendMode: 'screen',
-          /* 좌·상·하만 페이드, 우측은 배경색과 자연스럽게 */
+          /*
+           * 4방향 마스크:
+           * 좌(10%까지 페이드인) · 우(85%부터 페이드아웃, 검은 경계 제거)
+           * 상(8%까지 페이드인) · 하(85%부터 페이드아웃)
+           */
           WebkitMaskImage: [
-            'linear-gradient(to right, transparent 0%, black 10%, black 100%)',
+            'linear-gradient(to right, transparent 0%, black 10%, black 85%, transparent 100%)',
             'linear-gradient(to bottom, transparent 0%, black 8%, black 85%, transparent 100%)',
           ].join(', '),
           WebkitMaskComposite: 'destination-in',
           maskImage: [
-            'linear-gradient(to right, transparent 0%, black 10%, black 100%)',
+            'linear-gradient(to right, transparent 0%, black 10%, black 85%, transparent 100%)',
             'linear-gradient(to bottom, transparent 0%, black 8%, black 85%, transparent 100%)',
           ].join(', '),
           maskComposite: 'intersect',
@@ -150,8 +155,14 @@ export default function BootcampHero({ participantName, completedWeeks }: Bootca
 
 
         {/* ── 미션 진행 현황 (주차별 스텝) ── */}
-        <div className="mb-10">
-          <p className="text-xs uppercase tracking-widest mb-6 text-center" style={{ color: '#4A6080' }}>
+        <div
+          className="mb-10 rounded-3xl px-6 pt-6 pb-7"
+          style={{
+            border: '1px solid rgba(255,230,150,0.45)',
+            background: 'rgba(8,26,58,0.55)',
+          }}
+        >
+          <p className="font-bold mb-6 text-center" style={{ color: '#E6D27A', fontSize: '1.5rem', letterSpacing: '0.03em' }}>
             미션 진행 현황
           </p>
 
@@ -277,7 +288,11 @@ export default function BootcampHero({ participantName, completedWeeks }: Bootca
         {mounted && currentWeek && (
           <div
             className="mt-10 rounded-2xl p-5"
-            style={{ border: '1px solid rgba(230,210,122,0.30)', background: 'linear-gradient(135deg, rgba(255,242,168,0.06) 0%, rgba(255,242,168,0.02) 100%)' }}
+            style={{
+              border: '1px solid rgba(230,210,122,0.45)',
+              background: 'rgba(10,32,72,0.90)',
+              boxShadow: '0 4px 24px rgba(0,0,0,0.35)',
+            }}
           >
             <p className="text-xs font-semibold uppercase tracking-wider mb-1" style={{ color: '#F3D96B' }}>
               현재 진행 중
