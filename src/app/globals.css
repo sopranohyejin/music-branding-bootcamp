@@ -69,7 +69,7 @@ textarea:focus {
   display: flex;
   align-items: center;
   width: max-content;
-  animation: ticker-scroll 65s linear infinite;
+  animation: ticker-scroll 93s linear infinite;
   will-change: transform;
 }
 

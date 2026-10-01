@@ -47,13 +47,12 @@ export default function BootcampHero({ participantName, completedWeeks }: Bootca
     }) ?? (mounted ? WEEKS.find((w) => isWeekReleased(w)) : null);
 
   return (
-    <section className="relative text-white overflow-hidden" style={{ backgroundColor: '#04152D' }}>
+    <section className="relative text-white overflow-hidden" style={{ backgroundColor: '#060d22' }}>
 
       {/* ── 배경 광원 1: 좌상단 ── */}
       <div className="absolute pointer-events-none" style={{ top: '-10%', left: '-5%', width: '60%', height: '70%', background: 'radial-gradient(ellipse at center, rgba(243,217,107,0.12) 0%, rgba(230,210,122,0.06) 40%, transparent 70%)', filter: 'blur(50px)' }} />
 
-      {/* ── 배경 광원 2: 우하단 ── */}
-      <div className="absolute pointer-events-none" style={{ bottom: '-10%', right: '-8%', width: '55%', height: '65%', background: 'radial-gradient(ellipse at center, rgba(8,34,74,0.6) 0%, rgba(4,21,45,0.3) 50%, transparent 75%)', filter: 'blur(40px)' }} />
+      {/* ── 배경 광원 2: 우하단 (제거 - 램프 이미지 배경과 충돌) ── */}
 
       {/* ── 배경 광원 3: 우상단 ── */}
       <div className="absolute pointer-events-none" style={{ top: '5%', right: '10%', width: '28%', height: '35%', background: 'radial-gradient(ellipse at center, rgba(255,242,168,0.08) 0%, transparent 65%)', filter: 'blur(30px)' }} />
@@ -79,7 +78,7 @@ export default function BootcampHero({ participantName, completedWeeks }: Bootca
           /* 위치: 히어로 오른쪽 상단~중단 빈 공간 */
           top: '10%',
           /* 오른쪽 끝에서 안쪽으로: 손잡이가 화면 오른쪽 20% 지점에 오도록 */
-          right: 'clamp(120px, 20vw, 360px)',
+          right: 'clamp(30px, 6vw, 100px)',
           /* 크기 유지 (반응형 vw 기반) */
           width: 'clamp(780px, 72vw, 1380px)',
           height: 'auto',
@@ -122,7 +121,7 @@ export default function BootcampHero({ participantName, completedWeeks }: Bootca
         </div>
 
         {/* ── 타이틀 ── */}
-        <h1 className="text-3xl md:text-5xl font-black leading-tight mb-6 tracking-tight">
+        <h1 className="text-3xl md:text-5xl font-black leading-tight mb-6 tracking-tight" style={{ textShadow: '0 2px 8px rgba(0,0,0,0.7), 0 6px 32px rgba(0,0,0,0.5), 2px 4px 0 rgba(0,0,0,0.4)' }}>
           <span className="text-white">소득없는 음악인</span>
           <br />
           <span style={{ color: '#FFF2A8' }}>소득있는 음악인</span>
