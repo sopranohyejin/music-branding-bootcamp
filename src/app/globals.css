@@ -8,8 +8,9 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-nanum-square), 'Pretendard', -apple-system, BlinkMacSystemFont,
+  --font-sans: 'Paperlogy', 'Pretendard', -apple-system, BlinkMacSystemFont,
     'Segoe UI', Helvetica, Arial, sans-serif;
+  --font-heading: 'Paperlogy', 'Pretendard', sans-serif;
 }
 
 html {
@@ -20,8 +21,15 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-sans);
+  font-weight: 500; /* Paperlogy 5 Medium */
   -webkit-font-smoothing: antialiased;
   line-height: 1.7;
+}
+
+/* 큰 제목류: Paperlogy 9 Black */
+h1, h2, h3 {
+  font-family: var(--font-heading);
+  font-weight: 900;
 }
 
 ::-webkit-scrollbar {

@@ -76,7 +76,7 @@ export default function BootcampHero({ participantName, completedWeeks }: Bootca
         className="absolute pointer-events-none select-none hidden sm:block"
         style={{
           /* 위치: 히어로 오른쪽 상단~중단 빈 공간 */
-          top: '10%',
+          top: '-5%',
           /* 오른쪽 끝에서 안쪽으로: 손잡이가 화면 오른쪽 20% 지점에 오도록 */
           right: 'clamp(30px, 6vw, 100px)',
           /* 크기 유지 (반응형 vw 기반) */
@@ -142,7 +142,7 @@ export default function BootcampHero({ participantName, completedWeeks }: Bootca
         </div>
 
         {/* ── 타이틀 ── */}
-        <h1 className="text-5xl md:text-7xl font-black leading-tight mb-6 tracking-tight" style={{ textShadow: '0 2px 8px rgba(0,0,0,0.7), 0 6px 32px rgba(0,0,0,0.5), 2px 4px 0 rgba(0,0,0,0.4)' }}>
+        <h1 className="text-3xl md:text-5xl font-black leading-tight mb-6 tracking-tight" style={{ textShadow: '0 2px 8px rgba(0,0,0,0.7), 0 6px 32px rgba(0,0,0,0.5), 2px 4px 0 rgba(0,0,0,0.4)' }}>
           <span className="text-white">소득없는 음악인</span>
           <br />
           <span style={{ color: '#FFF2A8' }}>소득있는 음악인</span>
