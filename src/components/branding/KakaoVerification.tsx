@@ -146,12 +146,13 @@ export default function KakaoVerification({
   participantName,
   submission,
 }: KakaoVerificationProps) {
+  const [generatedText, setGeneratedText] = useState<string | null>(null);
   const [copyStatus, setCopyStatus] = useState<'idle' | 'success' | 'fail'>('idle');
 
-  const kakaoText = buildKakaoText(activeTab, participantName, submission);
-
-  async function handleCopy() {
-    const ok = await copyToClipboard(kakaoText);
+  async function handleGenerate() {
+    const text = buildKakaoText(activeTab, participantName, submission);
+    setGeneratedText(text);
+    const ok = await copyToClipboard(text);
     setCopyStatus(ok ? 'success' : 'fail');
     setTimeout(() => setCopyStatus('idle'), 3000);
   }
@@ -164,47 +165,49 @@ export default function KakaoVerification({
           03. 카톡 인증
         </p>
         <p className="text-sm mt-1 leading-relaxed" style={{ color: '#6B7280' }}>
-          아래 인증문을 복사해서 챌린지 단톡방에 붙여넣어주세요.
+          버튼을 누르면 작성한 답변이 자동으로 모아져 복사됩니다. 챌린지 단톡방에 붙여넣어주세요.
         </p>
       </div>
 
-      {/* 미리보기 박스 */}
-      <div
-        className="rounded-2xl p-5 mb-5"
-        style={{ background: '#F9FAFB', border: '1px solid #E5E7EB' }}
-      >
-        <p className="text-xs font-semibold mb-3" style={{ color: '#9CA3AF' }}>
-          카톡방 인증 양식 미리보기
-        </p>
-        <pre
-          className="text-sm leading-relaxed whitespace-pre-wrap"
-          style={{ color: '#374151', fontFamily: 'inherit' }}
-        >
-          {kakaoText}
-        </pre>
-      </div>
-
-      {/* 복사 버튼 */}
+      {/* 인증하기 버튼 */}
       <div className="flex flex-col items-start gap-2">
         <button
-          onClick={handleCopy}
+          onClick={handleGenerate}
           className="flex items-center gap-2 px-5 py-3 rounded-xl text-sm font-bold transition-all hover:opacity-90 active:scale-95"
           style={{ background: '#FFE566', color: '#07152F', border: '1px solid #D4B800' }}
         >
           <KakaoIcon size={20} />
-          카톡 인증문 복사하기
+          카톡 인증하기
         </button>
         {copyStatus === 'success' && (
           <p className="text-xs font-semibold" style={{ color: '#16A34A' }}>
-            ✅ 카톡 인증문이 복사되었습니다.
+            ✅ 카톡 인증문이 복사되었습니다. 단톡방에 붙여넣어주세요.
           </p>
         )}
         {copyStatus === 'fail' && (
           <p className="text-xs" style={{ color: '#DC2626' }}>
-            복사에 실패했습니다. 직접 드래그해서 복사해주세요.
+            복사에 실패했습니다. 아래 텍스트를 직접 드래그해서 복사해주세요.
           </p>
         )}
       </div>
+
+      {/* 보고서 영역 - 버튼 클릭 후에만 표시 */}
+      {generatedText && (
+        <div
+          className="rounded-2xl p-5 mt-5"
+          style={{ background: '#F9FAFB', border: '1px solid #E5E7EB' }}
+        >
+          <p className="text-xs font-semibold mb-3" style={{ color: '#9CA3AF' }}>
+            카톡방 인증 내용
+          </p>
+          <pre
+            className="text-sm leading-relaxed whitespace-pre-wrap"
+            style={{ color: '#374151', fontFamily: 'inherit' }}
+          >
+            {generatedText}
+          </pre>
+        </div>
+      )}
     </div>
   );
 }
