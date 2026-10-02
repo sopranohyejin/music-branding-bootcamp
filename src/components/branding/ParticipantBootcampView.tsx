@@ -38,6 +38,7 @@ import Week4Form from './Week4Form';
 import FinalMissionForm from './FinalMissionForm';
 import BrandingFormula from './BrandingFormula';
 import Toast from './Toast';
+import KakaoVerification from './KakaoVerification';
 
 type ActiveTab = 'week1' | 'week2' | 'week3' | 'week4' | 'final';
 type SaveStatus = 'idle' | 'saving' | 'saved' | 'error';
@@ -435,147 +436,150 @@ export default function ParticipantBootcampView() {
       {/* D. 탭 컨텐츠 */}
       <div className="max-w-3xl mx-auto px-6 py-10 flex flex-col gap-10">
 
-        {/* 1주차 */}
-        {activeTab === 'week1' && (
-          <>
-            <CommonMissionForm
-              data={submission.commonMissions}
-              activeWeek="week1"
-              onUpdate={(cm: CommonMissions) =>
-                updateAndSave({ ...submission, commonMissions: cm })
-              }
-              onShowToast={showToast}
-              isLocked={isWeekLocked('week1')}
-            />
-            <div className="border-t pt-10" style={{ borderColor: '#EFE4B0' }}>
-              <Week1Form
-                data={submission.weeklyMissions.week1}
-                isReleased={releasedWeeks[0]}
-                completedWeeks={submission.completedWeeks}
-                isLocked={isWeekLocked('week1')}
-                onUpdate={(d: Week1Data) =>
-                  updateAndSave({
-                    ...submission,
-                    weeklyMissions: { ...submission.weeklyMissions, week1: d },
-                  })
-                }
-                onComplete={() => completeWeek('week1')}
-                onUncomplete={() => uncompleteWeek('week1')}
-              />
-            </div>
-          </>
-        )}
-
-        {/* 2주차 */}
-        {activeTab === 'week2' && (
-          <>
-            <CommonMissionForm
-              data={submission.commonMissions}
-              activeWeek="week2"
-              onUpdate={(cm: CommonMissions) =>
-                updateAndSave({ ...submission, commonMissions: cm })
-              }
-              onShowToast={showToast}
-              isLocked={isWeekLocked('week2')}
-            />
-            <div className="border-t pt-10" style={{ borderColor: '#EFE4B0' }}>
-              <Week2Form
-                data={submission.weeklyMissions.week2}
-                isReleased={releasedWeeks[1]}
-                completedWeeks={submission.completedWeeks}
-                isLocked={isWeekLocked('week2')}
-                onUpdate={(d: Week2Data) =>
-                  updateAndSave({
-                    ...submission,
-                    weeklyMissions: { ...submission.weeklyMissions, week2: d },
-                  })
-                }
-                onComplete={() => completeWeek('week2')}
-                onUncomplete={() => uncompleteWeek('week2')}
-                onShowToast={showToast}
-              />
-            </div>
-          </>
-        )}
-
-        {/* 3주차 */}
-        {activeTab === 'week3' && (
-          <>
-            <CommonMissionForm
-              data={submission.commonMissions}
-              activeWeek="week3"
-              onUpdate={(cm: CommonMissions) =>
-                updateAndSave({ ...submission, commonMissions: cm })
-              }
-              onShowToast={showToast}
-              isLocked={isWeekLocked('week3')}
-            />
-            <div className="border-t pt-10" style={{ borderColor: '#EFE4B0' }}>
-              <Week3Form
-                data={submission.weeklyMissions.week3}
-                isReleased={releasedWeeks[2]}
-                completedWeeks={submission.completedWeeks}
-                isLocked={isWeekLocked('week3')}
-                onUpdate={(d: Week3Data) =>
-                  updateAndSave({
-                    ...submission,
-                    weeklyMissions: { ...submission.weeklyMissions, week3: d },
-                  })
-                }
-                onComplete={() => completeWeek('week3')}
-                onUncomplete={() => uncompleteWeek('week3')}
-              />
-            </div>
-          </>
-        )}
-
-        {/* 4주차 */}
-        {activeTab === 'week4' && (
-          <>
-            <CommonMissionForm
-              data={submission.commonMissions}
-              activeWeek="week4"
-              onUpdate={(cm: CommonMissions) =>
-                updateAndSave({ ...submission, commonMissions: cm })
-              }
-              onShowToast={showToast}
-              isLocked={isWeekLocked('week4')}
-            />
-            <div className="border-t pt-10" style={{ borderColor: '#EFE4B0' }}>
-              <Week4Form
-                data={submission.weeklyMissions.week4}
-                isReleased={releasedWeeks[3]}
-                completedWeeks={submission.completedWeeks}
-                isLocked={isWeekLocked('week4')}
-                onUpdate={(d: Week4Data) =>
-                  updateAndSave({
-                    ...submission,
-                    weeklyMissions: { ...submission.weeklyMissions, week4: d },
-                  })
-                }
-                onComplete={() => completeWeek('week4')}
-                onUncomplete={() => uncompleteWeek('week4')}
-              />
-            </div>
-          </>
-        )}
-
-        {/* 최종미션 */}
-        {activeTab === 'final' && (
-          <FinalMissionForm
-            finalData={submission.weeklyMissions.final}
-            week1Data={submission.weeklyMissions.week1}
-            commonMissions={submission.commonMissions}
-            completedWeeks={submission.completedWeeks}
-            onUpdate={(d: FinalData) =>
-              updateAndSave({
-                ...submission,
-                weeklyMissions: { ...submission.weeklyMissions, final: d },
-              })
+        {/* ── 01. 공통미션 (주차 탭만) ── */}
+        {activeTab !== 'final' && (
+          <CommonMissionForm
+            data={submission.commonMissions}
+            activeWeek={activeTab as 'week1' | 'week2' | 'week3' | 'week4'}
+            onUpdate={(cm: CommonMissions) =>
+              updateAndSave({ ...submission, commonMissions: cm })
             }
             onShowToast={showToast}
+            isLocked={isWeekLocked(activeTab as 'week1' | 'week2' | 'week3' | 'week4')}
           />
         )}
+
+        {/* ── 02. 헬퍼지니 브랜딩 독파 매니저 (주차 탭만) ── */}
+        {activeTab !== 'final' && (
+          <div className="border-t pt-10" style={{ borderColor: '#EFE4B0' }}>
+            <p className="font-bold mb-3" style={{ color: '#08224A', fontSize: '1.5rem' }}>
+              02. 헬퍼지니 브랜딩 독파 매니저
+            </p>
+            <div
+              className="rounded-2xl p-6"
+              style={{ background: 'rgba(8,34,74,0.04)', border: '1px solid rgba(8,34,74,0.12)' }}
+            >
+              <p className="text-sm leading-relaxed mb-5" style={{ color: '#374151' }}>
+                작성한 공통미션 답변을 바탕으로 헬퍼지니 브랜딩 독파 매니저에게 점검받아보세요.
+              </p>
+              <a
+                href="https://chatgpt.com/g/g-6abf05b1d93481918137061180ce1a99-helpeojini-beuraending-dogpa-maenijeo"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 px-5 py-3 rounded-xl text-sm font-bold hover:opacity-90 transition-all"
+                style={{ background: '#08224A', color: '#FFF2A8' }}
+              >
+                <span>🤖</span>
+                헬퍼지니 브랜딩 독파 매니저 열기
+              </a>
+              <p className="text-xs mt-3" style={{ color: '#9CA3AF' }}>
+                GPT가 열리지 않는 경우, 공유 설정 또는 로그인 계정을 확인해주세요.
+              </p>
+            </div>
+          </div>
+        )}
+
+        {/* ── 03. 주차 미션 ── */}
+        <div className="border-t pt-10" style={{ borderColor: '#EFE4B0' }}>
+          <p className="font-bold mb-6" style={{ color: '#08224A', fontSize: '1.5rem' }}>
+            {activeTab === 'week1' && '03. 1주차 미션'}
+            {activeTab === 'week2' && '03. 2주차 미션'}
+            {activeTab === 'week3' && '03. 3주차 미션'}
+            {activeTab === 'week4' && '03. 4주차 미션'}
+            {activeTab === 'final' && '03. 최종미션'}
+          </p>
+
+          {activeTab === 'week1' && (
+            <Week1Form
+              data={submission.weeklyMissions.week1}
+              isReleased={releasedWeeks[0]}
+              completedWeeks={submission.completedWeeks}
+              isLocked={isWeekLocked('week1')}
+              onUpdate={(d: Week1Data) =>
+                updateAndSave({
+                  ...submission,
+                  weeklyMissions: { ...submission.weeklyMissions, week1: d },
+                })
+              }
+              onComplete={() => completeWeek('week1')}
+              onUncomplete={() => uncompleteWeek('week1')}
+            />
+          )}
+          {activeTab === 'week2' && (
+            <Week2Form
+              data={submission.weeklyMissions.week2}
+              isReleased={releasedWeeks[1]}
+              completedWeeks={submission.completedWeeks}
+              isLocked={isWeekLocked('week2')}
+              onUpdate={(d: Week2Data) =>
+                updateAndSave({
+                  ...submission,
+                  weeklyMissions: { ...submission.weeklyMissions, week2: d },
+                })
+              }
+              onComplete={() => completeWeek('week2')}
+              onUncomplete={() => uncompleteWeek('week2')}
+              onShowToast={showToast}
+            />
+          )}
+          {activeTab === 'week3' && (
+            <Week3Form
+              data={submission.weeklyMissions.week3}
+              isReleased={releasedWeeks[2]}
+              completedWeeks={submission.completedWeeks}
+              isLocked={isWeekLocked('week3')}
+              onUpdate={(d: Week3Data) =>
+                updateAndSave({
+                  ...submission,
+                  weeklyMissions: { ...submission.weeklyMissions, week3: d },
+                })
+              }
+              onComplete={() => completeWeek('week3')}
+              onUncomplete={() => uncompleteWeek('week3')}
+            />
+          )}
+          {activeTab === 'week4' && (
+            <Week4Form
+              data={submission.weeklyMissions.week4}
+              isReleased={releasedWeeks[3]}
+              completedWeeks={submission.completedWeeks}
+              isLocked={isWeekLocked('week4')}
+              onUpdate={(d: Week4Data) =>
+                updateAndSave({
+                  ...submission,
+                  weeklyMissions: { ...submission.weeklyMissions, week4: d },
+                })
+              }
+              onComplete={() => completeWeek('week4')}
+              onUncomplete={() => uncompleteWeek('week4')}
+            />
+          )}
+          {activeTab === 'final' && (
+            <FinalMissionForm
+              finalData={submission.weeklyMissions.final}
+              week1Data={submission.weeklyMissions.week1}
+              commonMissions={submission.commonMissions}
+              completedWeeks={submission.completedWeeks}
+              onUpdate={(d: FinalData) =>
+                updateAndSave({
+                  ...submission,
+                  weeklyMissions: { ...submission.weeklyMissions, final: d },
+                })
+              }
+              onShowToast={showToast}
+            />
+          )}
+        </div>
+
+        {/* ── 04. 카톡 인증 ── */}
+        <div className="border-t pt-10" style={{ borderColor: '#EFE4B0' }}>
+          <KakaoVerification
+            activeTab={activeTab}
+            participantName={participantName}
+            submission={submission}
+          />
+        </div>
+
       </div>
 
       {/* 저장 상태 표시기 */}
