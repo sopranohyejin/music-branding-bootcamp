@@ -54,18 +54,18 @@ function buildKakaoText(
     parts.push(cmLines.join('\n'));
   }
 
-  // ── 03. 주차 미션 ──
+  // ── 02. 주차 미션 ──
   if (tab === 'week1') {
     const d = submission.weeklyMissions.week1;
     parts.push(
-      ['[03. 1주차 미션]', '현재 자기소개', `→ ${ans(d.currentIntro)}`].join('\n')
+      ['[02. 1주차 미션]', '현재 자기소개', `→ ${ans(d.currentIntro)}`].join('\n')
     );
 
   } else if (tab === 'week2') {
     const d = submission.weeklyMissions.week2;
     parts.push(
       [
-        '[03. 2주차 미션]',
+        '[02. 2주차 미션]',
         `나의 타깃\n→ ${ans(d.targetCustomer)}`,
         `특징 1\n→ ${ans(d.feature1)}`,
         `특징 2\n→ ${ans(d.feature2)}`,
@@ -81,7 +81,7 @@ function buildKakaoText(
       .join('\n');
     parts.push(
       [
-        '[03. 3주차 미션]',
+        '[02. 3주차 미션]',
         `고객 문제 10개\n${problems}`,
         `선택한 고객 문제\n→ ${ans(d.selectedProblem)}`,
         `30초 셀프 스피치 대본\n→ ${ans(d.selfPitchScript)}`,
@@ -93,7 +93,7 @@ function buildKakaoText(
     const d = submission.weeklyMissions.week4;
     parts.push(
       [
-        '[03. 4주차 미션]',
+        '[02. 4주차 미션]',
         `경력: ${ans(d.career)}`,
         `자격: ${ans(d.certification)}`,
         `학력: ${ans(d.education)}`,
@@ -113,11 +113,32 @@ function buildKakaoText(
   } else if (tab === 'final') {
     const d = submission.weeklyMissions.final;
     parts.push(
-      ['[03. 최종미션]', '최종 자기소개', `→ ${ans(d.finalIntro)}`].join('\n')
+      ['[02. 최종미션]', '최종 자기소개', `→ ${ans(d.finalIntro)}`].join('\n')
     );
   }
 
   return parts.join('\n\n');
+}
+
+function KakaoIcon({ size = 20 }: { size?: number }) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-hidden="true"
+    >
+      <ellipse cx="12" cy="10" rx="10" ry="7.5" fill="#3B1E08" />
+      <path
+        d="M8.2 17.5 C7.8 17.5 7.9 17.1 8.1 16.7 L9.4 13.8 C7.0 12.9 5.5 11.2 5.5 9.3 C5.5 6.4 8.4 4.0 12 4.0 C15.6 4.0 18.5 6.4 18.5 9.3 C18.5 12.2 15.6 14.6 12 14.6 C11.2 14.6 10.4 14.5 9.7 14.3 L8.7 17.2 C8.6 17.4 8.4 17.5 8.2 17.5 Z"
+        fill="#FFE566"
+      />
+      <ellipse cx="9" cy="9.3" rx="0.9" ry="0.9" fill="#3B1E08" />
+      <ellipse cx="12" cy="9.3" rx="0.9" ry="0.9" fill="#3B1E08" />
+      <ellipse cx="15" cy="9.3" rx="0.9" ry="0.9" fill="#3B1E08" />
+    </svg>
+  );
 }
 
 export default function KakaoVerification({
@@ -140,7 +161,7 @@ export default function KakaoVerification({
       {/* 섹션 헤더 */}
       <div className="mb-5">
         <p className="font-bold mb-1" style={{ color: '#08224A', fontSize: '1.5rem' }}>
-          04. 카톡 인증
+          03. 카톡 인증
         </p>
         <p className="text-sm mt-1 leading-relaxed" style={{ color: '#6B7280' }}>
           아래 인증문을 복사해서 챌린지 단톡방에 붙여넣어주세요.
@@ -170,7 +191,7 @@ export default function KakaoVerification({
           className="flex items-center gap-2 px-5 py-3 rounded-xl text-sm font-bold transition-all hover:opacity-90 active:scale-95"
           style={{ background: '#FFE566', color: '#07152F', border: '1px solid #D4B800' }}
         >
-          <span>📋</span>
+          <KakaoIcon size={20} />
           카톡 인증문 복사하기
         </button>
         {copyStatus === 'success' && (

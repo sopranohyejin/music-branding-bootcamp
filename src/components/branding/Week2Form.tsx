@@ -6,9 +6,6 @@ import {
   CompletedWeeks,
   LOGO_BRIEF_QUESTIONS,
   LogoBriefData,
-  CUSTOM_GPT_URL,
-  generateLogoPrompt,
-  copyToClipboard,
 } from '@/lib/brandingBootcamp';
 import MissionCard from './MissionCard';
 import { CompleteButton } from './Week1Form';
@@ -36,9 +33,6 @@ export default function Week2Form({
 }: Week2FormProps) {
   const isCompleted = completedWeeks.week2;
 
-  const ALL_FIELDS = ['targetCustomer', 'feature1', 'feature2', 'feature3', 'oneSentenceBrand',
-    ...LOGO_BRIEF_QUESTIONS.map(q => `logo_${q.id}`)];
-
   const [editingSet, setEditingSet] = useState<Set<string>>(() => {
     const s = new Set<string>();
     if (!data.targetCustomer) s.add('targetCustomer');
@@ -63,17 +57,6 @@ export default function Week2Form({
 
   function updateLogoBrief(field: keyof LogoBriefData, value: string) {
     onUpdate({ ...data, logoBrief: { ...data.logoBrief, [field]: value } });
-  }
-
-  async function handlePromptCopy() {
-    const text = generateLogoPrompt(data.logoBrief);
-    const ok = await copyToClipboard(text);
-    onShowToast(ok ? '프롬프트가 복사되었습니다' : '복사 실패. 직접 선택해주세요.');
-  }
-
-  function handleOpenGPT() {
-    if (CUSTOM_GPT_URL) window.open(CUSTOM_GPT_URL, '_blank', 'noopener noreferrer');
-    else onShowToast('GPT 링크가 아직 등록되지 않았습니다.');
   }
 
   if (!isReleased) {
@@ -177,10 +160,7 @@ export default function Week2Form({
       </MissionCard>
 
       {/* 미션 ④ 로고 */}
-      <MissionCard
-        title="미션 ④ 로고 만들기"
-        subtitle="아래 정보를 입력하면 GPTs 프롬프트를 자동 생성해드립니다."
-      >
+      <MissionCard title="미션 ④ 로고 만들기">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4">
           {LOGO_BRIEF_QUESTIONS.map((q) => (
             <EditableInput
@@ -191,14 +171,6 @@ export default function Week2Form({
               onChange={(v) => updateLogoBrief(q.id, v)}
             />
           ))}
-        </div>
-        <div className="flex flex-wrap gap-3 mt-2 pt-4 border-t border-[#F3F4F6]">
-          <button onClick={handlePromptCopy} className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold" style={{ background: '#F3D96B', color: '#07152F', border: '1px solid #E6D27A' }}>
-            <span>📋</span>GPTs 로고 제작 프롬프트 복사하기
-          </button>
-          <button onClick={handleOpenGPT} className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-white text-sm font-semibold" style={{ background: '#08224A', border: '1px solid rgba(255,255,255,0.16)' }}>
-            <span>🤖</span>GPTs 열기
-          </button>
         </div>
       </MissionCard>
 

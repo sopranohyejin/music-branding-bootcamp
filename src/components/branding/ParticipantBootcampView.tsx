@@ -4,6 +4,7 @@ import { useEffect, useState, useRef } from 'react';
 import {
   ParticipantSubmission,
   saveSubmission,
+  loadSubmission,
   isWeekReleased,
   WEEKS,
   TEST_MODE,
@@ -96,8 +97,14 @@ export default function ParticipantBootcampView() {
       setAppState('loading');
       getOrCreateSubmission(cachedId)
         .then((sub) => {
-          saveSubmission(sub);
-          setSubmission(sub);
+          // localStorage 데이터가 Supabase보다 최신이면 (예: 저장 전 브라우저 종료) localStorage 우선
+          const localSub = loadSubmission(cachedId);
+          const localTime = localSub.updatedAt ? new Date(localSub.updatedAt).getTime() : 0;
+          const supabaseTime = sub.updatedAt ? new Date(sub.updatedAt).getTime() : 0;
+          const useLocal = localTime > supabaseTime;
+          // Supabase가 최신일 때만 localStorage 동기화 (불필요한 updatedAt 갱신 방지)
+          if (!useLocal) saveSubmission(sub);
+          setSubmission(useLocal ? localSub : sub);
           setAppState('ready');
         })
         .catch(() => {
@@ -195,11 +202,18 @@ export default function ParticipantBootcampView() {
         participantDbId: participant.id,
         participantName: participant.name,
       }));
-      saveSubmission(sub);
+
+      // localStorage 데이터가 Supabase보다 최신이면 (예: 저장 전 브라우저 종료) localStorage 우선
+      const localSub = loadSubmission(participant.id);
+      const localTime = localSub.updatedAt ? new Date(localSub.updatedAt).getTime() : 0;
+      const supabaseTime = sub.updatedAt ? new Date(sub.updatedAt).getTime() : 0;
+      const useLocal = localTime > supabaseTime;
+      // Supabase가 최신일 때만 localStorage 동기화 (불필요한 updatedAt 갱신 방지)
+      if (!useLocal) saveSubmission(sub);
 
       setParticipantDbId(participant.id);
       setParticipantName(participant.name);
-      setSubmission(sub);
+      setSubmission(useLocal ? localSub : sub);
       setAppState('ready');
     } catch (err) {
       console.error('[Bootcamp Entry] unexpected error:', err);
@@ -449,44 +463,14 @@ export default function ParticipantBootcampView() {
           />
         )}
 
-        {/* ── 02. 헬퍼지니 브랜딩 독파 매니저 (주차 탭만) ── */}
-        {activeTab !== 'final' && (
-          <div className="border-t pt-10" style={{ borderColor: '#EFE4B0' }}>
-            <p className="font-bold mb-3" style={{ color: '#08224A', fontSize: '1.5rem' }}>
-              02. 헬퍼지니 브랜딩 독파 매니저
-            </p>
-            <div
-              className="rounded-2xl p-6"
-              style={{ background: 'rgba(8,34,74,0.04)', border: '1px solid rgba(8,34,74,0.12)' }}
-            >
-              <p className="text-sm leading-relaxed mb-5" style={{ color: '#374151' }}>
-                작성한 공통미션 답변을 바탕으로 헬퍼지니 브랜딩 독파 매니저에게 점검받아보세요.
-              </p>
-              <a
-                href="https://chatgpt.com/g/g-6abf05b1d93481918137061180ce1a99-helpeojini-beuraending-dogpa-maenijeo"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-5 py-3 rounded-xl text-sm font-bold hover:opacity-90 transition-all"
-                style={{ background: '#08224A', color: '#FFF2A8' }}
-              >
-                <span>🤖</span>
-                헬퍼지니 브랜딩 독파 매니저 열기
-              </a>
-              <p className="text-xs mt-3" style={{ color: '#9CA3AF' }}>
-                GPT가 열리지 않는 경우, 공유 설정 또는 로그인 계정을 확인해주세요.
-              </p>
-            </div>
-          </div>
-        )}
-
-        {/* ── 03. 주차 미션 ── */}
+        {/* ── 02. 주차 미션 ── */}
         <div className="border-t pt-10" style={{ borderColor: '#EFE4B0' }}>
           <p className="font-bold mb-6" style={{ color: '#08224A', fontSize: '1.5rem' }}>
-            {activeTab === 'week1' && '03. 1주차 미션'}
-            {activeTab === 'week2' && '03. 2주차 미션'}
-            {activeTab === 'week3' && '03. 3주차 미션'}
-            {activeTab === 'week4' && '03. 4주차 미션'}
-            {activeTab === 'final' && '03. 최종미션'}
+            {activeTab === 'week1' && '02. 1주차 미션'}
+            {activeTab === 'week2' && '02. 2주차 미션'}
+            {activeTab === 'week3' && '02. 3주차 미션'}
+            {activeTab === 'week4' && '02. 4주차 미션'}
+            {activeTab === 'final' && '02. 최종미션'}
           </p>
 
           {activeTab === 'week1' && (
@@ -571,7 +555,7 @@ export default function ParticipantBootcampView() {
           )}
         </div>
 
-        {/* ── 04. 카톡 인증 ── */}
+        {/* ── 03. 카톡 인증 ── */}
         <div className="border-t pt-10" style={{ borderColor: '#EFE4B0' }}>
           <KakaoVerification
             activeTab={activeTab}
