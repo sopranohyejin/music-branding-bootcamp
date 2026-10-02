@@ -147,51 +147,84 @@ export default function KakaoVerification({
   submission,
 }: KakaoVerificationProps) {
   const [generatedText, setGeneratedText] = useState<string | null>(null);
-  const [copyStatus, setCopyStatus] = useState<'idle' | 'success' | 'fail'>('idle');
+  const [showToast, setShowToast] = useState(false);
+  const [copyFailed, setCopyFailed] = useState(false);
 
-  async function handleGenerate() {
+  function handleGenerate() {
     const text = buildKakaoText(activeTab, participantName, submission);
     setGeneratedText(text);
+  }
+
+  async function handleCopy() {
+    const text = generatedText ?? buildKakaoText(activeTab, participantName, submission);
+    if (!generatedText) setGeneratedText(text);
     const ok = await copyToClipboard(text);
-    setCopyStatus(ok ? 'success' : 'fail');
-    setTimeout(() => setCopyStatus('idle'), 3000);
+    if (ok) {
+      setShowToast(true);
+      setCopyFailed(false);
+      setTimeout(() => setShowToast(false), 2500);
+    } else {
+      setCopyFailed(true);
+    }
   }
 
   return (
     <div>
+      {/* 복사 완료 팝업 토스트 */}
+      {showToast && (
+        <div
+          className="fixed top-6 left-1/2 z-50 px-6 py-3 rounded-2xl text-sm font-bold shadow-lg"
+          style={{
+            transform: 'translateX(-50%)',
+            background: '#08224A',
+            color: '#FFF2A8',
+            pointerEvents: 'none',
+          }}
+        >
+          ✅ 복사되었습니다! 카톡 단톡방에 붙여넣어주세요.
+        </div>
+      )}
+
       {/* 섹션 헤더 */}
       <div className="mb-5">
         <p className="font-bold mb-1" style={{ color: '#08224A', fontSize: '1.5rem' }}>
           03. 카톡 인증
         </p>
         <p className="text-sm mt-1 leading-relaxed" style={{ color: '#6B7280' }}>
-          버튼을 누르면 작성한 답변이 자동으로 모아져 복사됩니다. 챌린지 단톡방에 붙여넣어주세요.
+          보고서를 먼저 확인한 뒤, 카톡 인증하기를 눌러 복사하세요.
         </p>
       </div>
 
-      {/* 인증하기 버튼 */}
-      <div className="flex flex-col items-start gap-2">
+      {/* 버튼 2개 */}
+      <div className="flex items-center gap-3 flex-wrap">
+        {/* 보고서 만들기 */}
         <button
           onClick={handleGenerate}
+          className="flex items-center gap-2 px-5 py-3 rounded-xl text-sm font-bold transition-all hover:opacity-80 active:scale-95"
+          style={{ background: '#F3F4F6', color: '#374151', border: '1px solid #D1D5DB' }}
+        >
+          📄 보고서 만들기
+        </button>
+
+        {/* 카톡 인증하기 */}
+        <button
+          onClick={handleCopy}
           className="flex items-center gap-2 px-5 py-3 rounded-xl text-sm font-bold transition-all hover:opacity-90 active:scale-95"
           style={{ background: '#FFE566', color: '#07152F', border: '1px solid #D4B800' }}
         >
           <KakaoIcon size={20} />
           카톡 인증하기
         </button>
-        {copyStatus === 'success' && (
-          <p className="text-xs font-semibold" style={{ color: '#16A34A' }}>
-            ✅ 카톡 인증문이 복사되었습니다. 단톡방에 붙여넣어주세요.
-          </p>
-        )}
-        {copyStatus === 'fail' && (
-          <p className="text-xs" style={{ color: '#DC2626' }}>
-            복사에 실패했습니다. 아래 텍스트를 직접 드래그해서 복사해주세요.
-          </p>
-        )}
       </div>
 
-      {/* 보고서 영역 - 버튼 클릭 후에만 표시 */}
+      {/* 복사 실패 메시지 */}
+      {copyFailed && (
+        <p className="text-xs mt-2" style={{ color: '#DC2626' }}>
+          복사에 실패했습니다. 아래 텍스트를 직접 드래그해서 복사해주세요.
+        </p>
+      )}
+
+      {/* 보고서 영역 - 보고서 만들기 클릭 후에만 표시 */}
       {generatedText && (
         <div
           className="rounded-2xl p-5 mt-5"
