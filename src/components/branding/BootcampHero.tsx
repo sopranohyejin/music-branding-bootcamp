@@ -168,7 +168,7 @@ export default function BootcampHero({ participantName, completedWeeks }: Bootca
         </div>
 
         {/* ── 참가자 이름 ── */}
-        <p className="text-sm mb-10" style={{ color: '#7A8FA8' }}>
+        <p className="text-sm mb-10" style={{ color: '#FFFFFF' }}>
           음악인으로 반드시 성공할{' '}
           <span className="font-bold" style={{ color: '#FFF2A8' }}>{participantName}</span>
         </p>
