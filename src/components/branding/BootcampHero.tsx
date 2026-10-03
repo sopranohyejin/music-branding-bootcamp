@@ -6,6 +6,7 @@ import {
   formatCountdown,
   CompletedWeeks,
   WEEKS,
+  FINAL_RELEASE_DATE,
   isWeekReleased,
 } from '@/lib/brandingBootcamp';
 
@@ -28,11 +29,18 @@ export default function BootcampHero({ participantName, completedWeeks }: Bootca
         setNextLectureLabel('');
         return;
       }
+      // releaseDate 기준으로 다음 주차 매칭
       const week = WEEKS.find((w) => {
-        try { return new Date(w.lectureDate).getTime() === nextDate.getTime(); }
+        try { return new Date(w.releaseDate).getTime() === nextDate.getTime(); }
         catch { return false; }
       });
-      setNextLectureLabel(week ? `다음 강의 (${week.label}) 까지` : '다음 강의까지');
+      // 최종미션 여부 체크
+      const isFinal = !week && new Date(FINAL_RELEASE_DATE).getTime() === nextDate.getTime();
+      if (isFinal) {
+        setNextLectureLabel('최종미션 공개까지');
+      } else {
+        setNextLectureLabel(week ? `${week.label} 미션 공개까지` : '다음 미션 공개까지');
+      }
       setCountdown(formatCountdown(nextDate));
     };
     updateCountdown();

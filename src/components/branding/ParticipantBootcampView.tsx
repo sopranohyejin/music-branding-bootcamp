@@ -6,6 +6,7 @@ import {
   saveSubmission,
   loadSubmission,
   isWeekReleased,
+  isFinalReleased,
   WEEKS,
   TEST_MODE,
   CommonMissions,
@@ -436,13 +437,24 @@ export default function ParticipantBootcampView() {
                 </button>
               ) : null,
             )}
-            <button
-              onClick={() => setActiveTab('final')}
-              className="flex-shrink-0 px-4 py-2 rounded-full text-xs transition-all duration-150"
-              style={tabStyle(activeTab === 'final')}
-            >
-              최종미션
-            </button>
+            {isFinalReleased() ? (
+              <button
+                onClick={() => setActiveTab('final')}
+                className="flex-shrink-0 px-4 py-2 rounded-full text-xs transition-all duration-150"
+                style={tabStyle(activeTab === 'final')}
+              >
+                최종미션
+              </button>
+            ) : (
+              <button
+                disabled
+                className="flex-shrink-0 px-4 py-2 rounded-full text-xs"
+                style={{ background: '#F3F4F6', color: '#9CA3AF', cursor: 'not-allowed', border: '1px solid #E5E7EB' }}
+                title="2026-11-03 21:50 공개 예정"
+              >
+                🔒 최종미션
+              </button>
+            )}
           </div>
         </div>
       </div>
@@ -539,19 +551,34 @@ export default function ParticipantBootcampView() {
             />
           )}
           {activeTab === 'final' && (
-            <FinalMissionForm
-              finalData={submission.weeklyMissions.final}
-              week1Data={submission.weeklyMissions.week1}
-              commonMissions={submission.commonMissions}
-              completedWeeks={submission.completedWeeks}
-              onUpdate={(d: FinalData) =>
-                updateAndSave({
-                  ...submission,
-                  weeklyMissions: { ...submission.weeklyMissions, final: d },
-                })
-              }
-              onShowToast={showToast}
-            />
+            isFinalReleased() ? (
+              <FinalMissionForm
+                finalData={submission.weeklyMissions.final}
+                week1Data={submission.weeklyMissions.week1}
+                commonMissions={submission.commonMissions}
+                completedWeeks={submission.completedWeeks}
+                onUpdate={(d: FinalData) =>
+                  updateAndSave({
+                    ...submission,
+                    weeklyMissions: { ...submission.weeklyMissions, final: d },
+                  })
+                }
+                onShowToast={showToast}
+              />
+            ) : (
+              <div
+                className="rounded-2xl p-10 text-center"
+                style={{ background: '#F9FAFB', border: '1px solid #E5E7EB' }}
+              >
+                <p className="text-4xl mb-4">🔒</p>
+                <p className="font-bold text-lg mb-2" style={{ color: '#08224A' }}>
+                  최종미션은 아직 공개 전입니다
+                </p>
+                <p className="text-sm" style={{ color: '#6B7280' }}>
+                  2026년 11월 3일(화) 21:50 공개 예정
+                </p>
+              </div>
+            )
           )}
         </div>
 

@@ -12,7 +12,7 @@ export const CUSTOM_GPT_URL = '';
  * true  → 모든 주차 즉시 공개, 최종 미션 잠금 해제 (검수/테스트 용도)
  * false → 실제 releaseDate 기준으로 잠금 운영
  */
-export const TEST_MODE = true;
+export const TEST_MODE = false;
 
 // ─────────────────────────────────────────────
 // 타입 정의
@@ -155,7 +155,7 @@ export const WEEKS: WeekData[] = [
     title: '나는 음악가인가, 사업가인가?',
     lectureTitle: '브랜딩 전략 이해 / 음악가 → 사업가 사고전환',
     individualMissionTitle: '현재 자기소개 작성',
-    releaseDate: '2026-10-06T00:00:00+09:00',
+    releaseDate: '2026-10-06T21:50:00+09:00',
     lectureDate: '2026-10-06T21:00:00+09:00',
   },
   {
@@ -164,7 +164,7 @@ export const WEEKS: WeekData[] = [
     title: '나를 기억시키는 브랜드 만들기',
     lectureTitle: '각인: 노출 + 특징',
     individualMissionTitle: '나를 기억시키는 한 문장',
-    releaseDate: '2026-10-13T00:00:00+09:00',
+    releaseDate: '2026-10-13T21:50:00+09:00',
     lectureDate: '2026-10-13T21:00:00+09:00',
   },
   {
@@ -173,7 +173,7 @@ export const WEEKS: WeekData[] = [
     title: '고객 문제와 30초 셀 스피치',
     lectureTitle: '가치 + 셀 스피치: 고객 중심 사고',
     individualMissionTitle: '30초 셀 스피치',
-    releaseDate: '2026-10-20T00:00:00+09:00',
+    releaseDate: '2026-10-20T21:50:00+09:00',
     lectureDate: '2026-10-20T21:00:00+09:00',
   },
   {
@@ -182,7 +182,7 @@ export const WEEKS: WeekData[] = [
     title: '나의 신용 자산 만들기',
     lectureTitle: '신용: 신뢰를 자산으로 만드는 법',
     individualMissionTitle: '신용 자산 리스트',
-    releaseDate: '2026-10-27T00:00:00+09:00',
+    releaseDate: '2026-10-27T21:50:00+09:00',
     lectureDate: '2026-10-27T21:00:00+09:00',
   },
 ];
@@ -512,6 +512,14 @@ export function safeParseDate(dateStr: string): Date | null {
   }
 }
 
+export const FINAL_RELEASE_DATE = '2026-11-03T21:50:00+09:00';
+
+export function isFinalReleased(): boolean {
+  if (TEST_MODE) return true;
+  const d = safeParseDate(FINAL_RELEASE_DATE);
+  return d ? new Date() >= d : false;
+}
+
 export function isWeekReleased(week: WeekData): boolean {
   if (TEST_MODE) return true; // 테스트 모드: 전체 주차 즉시 공개
   const releaseDate = safeParseDate(week.releaseDate);
@@ -522,9 +530,12 @@ export function isWeekReleased(week: WeekData): boolean {
 export function getNextLectureDate(): Date | null {
   const now = new Date();
   for (const week of WEEKS) {
-    const d = safeParseDate(week.lectureDate);
+    const d = safeParseDate(week.releaseDate);
     if (d && d > now) return d;
   }
+  // 주차 미션이 모두 공개된 후 최종미션 체크
+  const finalDate = safeParseDate(FINAL_RELEASE_DATE);
+  if (finalDate && finalDate > now) return finalDate;
   return null;
 }
 
