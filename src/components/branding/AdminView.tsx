@@ -10,8 +10,13 @@ import {
 } from '@/lib/brandingBootcamp';
 import {
   AdminParticipantRow,
+  DbProject,
   loadAdminData,
+  loadAdminDataByProject,
+  loadProjects,
+  loadParticipantCounts,
   updateCompletedWeeks,
+  deleteParticipant,
 } from '@/lib/supabaseBootcamp';
 
 // ─────────────────────────────────────────────────────────────
@@ -28,6 +33,10 @@ export default function AdminView() {
   const [codeInput, setCodeInput] = useState('');
   const [authError, setAuthError] = useState('');
 
+  const [projects, setProjects] = useState<DbProject[]>([]);
+  const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
+  const [participantCounts, setParticipantCounts] = useState<Record<string, number>>({});
+
   const [rows, setRows] = useState<AdminParticipantRow[] | null>(null);
   const [loadError, setLoadError] = useState('');
   const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -40,18 +49,61 @@ export default function AdminView() {
     }
   }, []);
 
-  // 인증 후 데이터 로드
+  // 인증 후 프로젝트 목록 로드
   useEffect(() => {
     if (!authed) return;
-    refresh();
+    loadProjectList();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [authed]);
 
+  // 프로젝트 선택 변경 시 참가자 목록 로드
+  useEffect(() => {
+    if (!authed || selectedProjectId === null) return;
+    setSelectedId(null);
+    refresh();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedProjectId]);
+
+  async function loadProjectList() {
+    try {
+      const [projectList, counts] = await Promise.all([
+        loadProjects(),
+        loadParticipantCounts(),
+      ]);
+      setProjects(projectList);
+      setParticipantCounts(counts);
+      // 활성 프로젝트 자동 선택, 없으면 첫 번째 선택
+      const active = projectList.find((p) => p.status === 'active') ?? projectList[0];
+      if (active) setSelectedProjectId(active.id);
+      else {
+        // 프로젝트 테이블이 없거나 비어있으면 전체 로드
+        const data = await loadAdminData();
+        setRows(data);
+      }
+    } catch (e) {
+      console.error('loadProjectList error:', e);
+      // 프로젝트 테이블 미생성 시 기존 전체 조회로 폴백
+      try {
+        const data = await loadAdminData();
+        setRows(data);
+      } catch (e2) {
+        console.error('Admin load error:', e2);
+        setLoadError('데이터 불러오기 실패. Supabase 연결 및 환경변수를 확인해주세요.');
+      }
+    }
+  }
+
   async function refresh() {
     setLoadError('');
+    setRows(null);
     try {
-      const data = await loadAdminData();
+      const data = selectedProjectId
+        ? await loadAdminDataByProject(selectedProjectId)
+        : await loadAdminData();
       setRows(data);
+      // 참가자 수 업데이트
+      const counts = await loadParticipantCounts();
+      setParticipantCounts(counts);
     } catch (e) {
       console.error('Admin load error:', e);
       setLoadError('데이터 불러오기 실패. Supabase 연결 및 환경변수를 확인해주세요.');
@@ -74,6 +126,17 @@ export default function AdminView() {
       await refresh();
     } catch (e) {
       console.error('Toggle complete error:', e);
+    }
+  }
+
+  async function handleDelete(participantDbId: string, name: string) {
+    if (!confirm(`정말 이 참가자를 삭제하시겠습니까?\n\n이름: ${name}\n\n저장된 답변도 함께 삭제됩니다.`)) return;
+    try {
+      await deleteParticipant(participantDbId);
+      await refresh();
+    } catch (e) {
+      console.error('Delete error:', e);
+      alert('삭제 중 오류가 발생했습니다. 다시 시도해주세요.');
     }
   }
 
@@ -123,40 +186,18 @@ export default function AdminView() {
     );
   }
 
-  // ── 로딩 / 에러 ────────────────────────────────────────────
-  if (!rows) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-[#FFF8F9]">
-        {loadError ? (
-          <div className="text-center px-6">
-            <p className="text-sm mb-4" style={{ color: '#DC2626' }}>{loadError}</p>
-            <button
-              onClick={refresh}
-              className="px-4 py-2 rounded-lg bg-[#6D284A] text-white text-sm"
-            >
-              다시 시도
-            </button>
-          </div>
-        ) : (
-          <p className="text-[#6B7280] text-sm">로딩 중...</p>
-        )}
-      </div>
-    );
-  }
-
   const selectedRow = selectedId
-    ? rows.find((r) => r.participantDbId === selectedId)
+    ? rows?.find((r) => r.participantDbId === selectedId)
     : null;
 
   return (
-    <div className="min-h-screen bg-[#FFF8F9]">
+    <div className="min-h-screen bg-[#FFF8F9] flex flex-col">
       {/* 관리자 헤더 */}
-      <div className="bg-[#6D284A] text-white">
-        <div className="max-w-5xl mx-auto px-6 py-8 flex items-start justify-between">
+      <div className="bg-[#6D284A] text-white flex-shrink-0">
+        <div className="px-6 py-6 flex items-center justify-between">
           <div>
-            <p className="text-xs text-[#FCE7EF]/60 uppercase tracking-widest mb-1">관리자</p>
-            <h1 className="text-2xl font-bold">음악인 브랜딩 부트캠프</h1>
-            <p className="text-[#FCE7EF]/70 text-sm mt-1">참가자 현황 및 답변 조회</p>
+            <p className="text-xs text-[#FCE7EF]/60 uppercase tracking-widest mb-0.5">관리자</p>
+            <h1 className="text-xl font-bold">음악인 브랜딩 부트캠프</h1>
           </div>
           <button
             onClick={() => {
@@ -164,29 +205,148 @@ export default function AdminView() {
               setAuthed(false);
               setRows(null);
               setSelectedId(null);
+              setProjects([]);
+              setSelectedProjectId(null);
             }}
-            className="text-xs text-[#FCE7EF]/70 hover:text-white border border-[#FCE7EF]/30 px-3 py-1.5 rounded-lg transition-colors mt-1"
+            className="text-xs text-[#FCE7EF]/70 hover:text-white border border-[#FCE7EF]/30 px-3 py-1.5 rounded-lg transition-colors"
           >
             로그아웃
           </button>
         </div>
       </div>
 
-      <div className="max-w-5xl mx-auto px-6 py-10">
-        {selectedRow ? (
-          <AdminDetail
-            row={selectedRow}
-            onBack={() => setSelectedId(null)}
-            onToggleComplete={(wk) => toggleComplete(selectedRow.participantDbId, wk)}
-          />
-        ) : (
-          <AdminList
-            rows={rows}
-            onSelect={(id) => setSelectedId(id)}
-            onToggleComplete={toggleComplete}
-            onRefresh={refresh}
-          />
+      {/* 본문: 사이드바 + 메인 */}
+      <div className="flex flex-1 min-h-0">
+        {/* 왼쪽 사이드바 */}
+        <ProjectSidebar
+          projects={projects}
+          selectedId={selectedProjectId}
+          participantCounts={participantCounts}
+          onSelect={(id) => {
+            setSelectedProjectId(id);
+            setSelectedId(null);
+          }}
+        />
+
+        {/* 오른쪽 메인 영역 */}
+        <div className="flex-1 overflow-y-auto px-6 py-8">
+          {/* 로딩 / 에러 */}
+          {rows === null && (
+            <div className="flex items-center justify-center h-40">
+              {loadError ? (
+                <div className="text-center">
+                  <p className="text-sm mb-4" style={{ color: '#DC2626' }}>{loadError}</p>
+                  <button
+                    onClick={refresh}
+                    className="px-4 py-2 rounded-lg bg-[#6D284A] text-white text-sm"
+                  >
+                    다시 시도
+                  </button>
+                </div>
+              ) : (
+                <p className="text-[#6B7280] text-sm">로딩 중...</p>
+              )}
+            </div>
+          )}
+
+          {rows !== null && (
+            selectedRow ? (
+              <AdminDetail
+                row={selectedRow}
+                onBack={() => setSelectedId(null)}
+                onToggleComplete={(wk) => toggleComplete(selectedRow.participantDbId, wk)}
+                onDelete={() => handleDelete(selectedRow.participantDbId, selectedRow.name)}
+              />
+            ) : (
+              <AdminList
+                rows={rows}
+                onSelect={(id) => setSelectedId(id)}
+                onToggleComplete={toggleComplete}
+                onRefresh={refresh}
+                onDelete={handleDelete}
+              />
+            )
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────
+// 프로젝트 사이드바
+// ─────────────────────────────────────────────────────────────
+interface ProjectSidebarProps {
+  projects: DbProject[];
+  selectedId: string | null;
+  participantCounts: Record<string, number>;
+  onSelect: (id: string) => void;
+}
+
+function ProjectSidebar({ projects, selectedId, participantCounts, onSelect }: ProjectSidebarProps) {
+  function statusLabel(status: string) {
+    if (status === 'active') return '진행 중';
+    if (status === 'upcoming') return '예정';
+    if (status === 'ended') return '종료';
+    return status;
+  }
+  function statusColor(status: string) {
+    if (status === 'active') return '#86EFAC'; // green
+    if (status === 'upcoming') return '#FDE68A'; // yellow
+    return '#D1D5DB'; // gray
+  }
+
+  return (
+    <div
+      className="flex-shrink-0 flex flex-col overflow-y-auto"
+      style={{ width: 260, background: '#3D0F28', borderRight: '1px solid rgba(255,255,255,0.08)' }}
+    >
+      <div className="px-5 py-5" style={{ borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
+        <p className="text-xs uppercase tracking-widest" style={{ color: 'rgba(252,231,239,0.5)' }}>
+          프로젝트 / 기수
+        </p>
+      </div>
+
+      <div className="flex flex-col gap-1 p-3 flex-1">
+        {projects.length === 0 && (
+          <p className="text-xs px-3 py-2" style={{ color: 'rgba(252,231,239,0.4)' }}>
+            프로젝트 없음
+          </p>
         )}
+        {projects.map((project) => {
+          const isSelected = selectedId === project.id;
+          const count = participantCounts[project.id] ?? 0;
+          return (
+            <button
+              key={project.id}
+              onClick={() => onSelect(project.id)}
+              className="w-full text-left rounded-xl px-4 py-3 transition-all"
+              style={{
+                background: isSelected ? '#6D284A' : 'transparent',
+                border: isSelected ? '1px solid rgba(252,231,239,0.2)' : '1px solid transparent',
+              }}
+            >
+              <p
+                className="font-semibold text-sm leading-snug"
+                style={{ color: isSelected ? '#FFFFFF' : 'rgba(252,231,239,0.8)' }}
+              >
+                {project.title}
+              </p>
+              <div className="flex items-center gap-2 mt-1.5">
+                <span
+                  className="inline-block w-1.5 h-1.5 rounded-full"
+                  style={{ background: statusColor(project.status) }}
+                />
+                <span
+                  className="text-xs"
+                  style={{ color: isSelected ? 'rgba(252,231,239,0.7)' : 'rgba(252,231,239,0.45)' }}
+                >
+                  {statusLabel(project.status)} · {count}명
+                </span>
+              </div>
+            </button>
+          );
+        })}
       </div>
     </div>
   );
@@ -200,9 +360,10 @@ interface AdminListProps {
   onSelect: (id: string) => void;
   onToggleComplete: (id: string, wk: keyof ParticipantSubmission['completedWeeks']) => void;
   onRefresh: () => void;
+  onDelete: (id: string, name: string) => void;
 }
 
-function AdminList({ rows, onSelect, onToggleComplete, onRefresh }: AdminListProps) {
+function AdminList({ rows, onSelect, onToggleComplete, onRefresh, onDelete }: AdminListProps) {
   const weekKeys: Array<keyof ParticipantSubmission['completedWeeks']> = [
     'week1', 'week2', 'week3', 'week4',
   ];
@@ -221,123 +382,152 @@ function AdminList({ rows, onSelect, onToggleComplete, onRefresh }: AdminListPro
         </button>
       </div>
 
-      {/* 데스크톱 테이블 */}
-      <div className="hidden md:block overflow-x-auto rounded-2xl border border-[#FCE7EF] bg-white shadow-sm">
-        <table className="w-full text-sm">
-          <thead>
-            <tr className="bg-[#6D284A] text-white">
-              <th className="px-4 py-4 text-left font-semibold">이름</th>
-              <th className="px-4 py-4 text-left font-semibold">번호 끝</th>
-              <th className="px-4 py-4 text-center font-semibold">진행률</th>
-              <th className="px-4 py-4 text-center font-semibold">1주</th>
-              <th className="px-4 py-4 text-center font-semibold">2주</th>
-              <th className="px-4 py-4 text-center font-semibold">3주</th>
-              <th className="px-4 py-4 text-center font-semibold">4주</th>
-              <th className="px-4 py-4 text-left font-semibold">마지막 수정</th>
-              <th className="px-4 py-4 text-center font-semibold">상세</th>
-            </tr>
-          </thead>
-          <tbody>
+      {rows.length === 0 && (
+        <div className="text-center py-16 text-[#9CA3AF] text-sm">
+          이 프로젝트에 등록된 참가자가 없습니다.
+        </div>
+      )}
+
+      {rows.length > 0 && (
+        <>
+          {/* 데스크톱 테이블 */}
+          <div className="hidden md:block overflow-x-auto rounded-2xl border border-[#FCE7EF] bg-white shadow-sm">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="bg-[#6D284A] text-white">
+                  <th className="px-4 py-4 text-left font-semibold">이름</th>
+                  <th className="px-4 py-4 text-left font-semibold">번호 끝</th>
+                  <th className="px-4 py-4 text-center font-semibold">진행률</th>
+                  <th className="px-4 py-4 text-center font-semibold">1주</th>
+                  <th className="px-4 py-4 text-center font-semibold">2주</th>
+                  <th className="px-4 py-4 text-center font-semibold">3주</th>
+                  <th className="px-4 py-4 text-center font-semibold">4주</th>
+                  <th className="px-4 py-4 text-left font-semibold">마지막 수정</th>
+                  <th className="px-4 py-4 text-center font-semibold">상세</th>
+                  <th className="px-4 py-4 text-center font-semibold">삭제</th>
+                </tr>
+              </thead>
+              <tbody>
+                {rows.map((row) => {
+                  const flames = calcFlameCount(row.submission.completedWeeks);
+                  return (
+                    <tr
+                      key={row.participantDbId}
+                      className="border-t border-[#FCE7EF] hover:bg-[#FFF8F9]"
+                    >
+                      <td className="px-4 py-4 font-semibold text-[#1F2937]">{row.name}</td>
+                      <td className="px-4 py-4 text-[#9CA3AF] font-mono text-xs">
+                        ****{row.phoneLast4}
+                      </td>
+                      <td className="px-4 py-4 text-center">
+                        <span className="text-sm">
+                          {'🔥'.repeat(flames)}{'⬜'.repeat(4 - flames)}
+                        </span>
+                        <span className="text-xs text-[#9CA3AF] ml-1">{flames}/4</span>
+                      </td>
+                      {weekKeys.map((wk) => (
+                        <td key={wk} className="px-4 py-4 text-center">
+                          <button
+                            onClick={() => onToggleComplete(row.participantDbId, wk)}
+                            title="클릭하면 완료 상태 토글"
+                            className={`w-7 h-7 rounded-full text-sm transition-all hover:scale-110 ${
+                              row.submission.completedWeeks[wk]
+                                ? 'bg-[#E86A92] text-white'
+                                : 'bg-[#F3F4F6] text-[#D1D5DB]'
+                            }`}
+                          >
+                            {row.submission.completedWeeks[wk] ? '🔥' : '○'}
+                          </button>
+                        </td>
+                      ))}
+                      <td className="px-4 py-4 text-[#9CA3AF] text-xs">
+                        {row.updatedAt
+                          ? new Date(row.updatedAt).toLocaleString('ko-KR', {
+                              month: '2-digit',
+                              day: '2-digit',
+                              hour: '2-digit',
+                              minute: '2-digit',
+                            })
+                          : '-'}
+                      </td>
+                      <td className="px-4 py-4 text-center">
+                        <button
+                          onClick={() => onSelect(row.participantDbId)}
+                          className="px-3 py-1.5 rounded-lg bg-[#6D284A] text-white text-xs font-semibold hover:bg-[#5a1f3b] transition-colors"
+                        >
+                          상세 보기
+                        </button>
+                      </td>
+                      <td className="px-4 py-4 text-center">
+                        <button
+                          onClick={() => onDelete(row.participantDbId, row.name)}
+                          className="px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors"
+                          style={{ background: '#FEE2E2', color: '#DC2626', border: '1px solid #FECACA' }}
+                        >
+                          삭제
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+
+          {/* 모바일 카드 */}
+          <div className="md:hidden flex flex-col gap-4">
             {rows.map((row) => {
               const flames = calcFlameCount(row.submission.completedWeeks);
               return (
-                <tr
+                <div
                   key={row.participantDbId}
-                  className="border-t border-[#FCE7EF] hover:bg-[#FFF8F9]"
+                  className="rounded-2xl border border-[#FCE7EF] bg-white p-5 shadow-sm"
                 >
-                  <td className="px-4 py-4 font-semibold text-[#1F2937]">{row.name}</td>
-                  <td className="px-4 py-4 text-[#9CA3AF] font-mono text-xs">
-                    ****{row.phoneLast4}
-                  </td>
-                  <td className="px-4 py-4 text-center">
-                    <span className="text-sm">
+                  <div className="flex items-start justify-between mb-3">
+                    <div>
+                      <p className="font-bold text-[#1F2937]">{row.name}</p>
+                      <p className="text-xs text-[#9CA3AF] font-mono">****{row.phoneLast4}</p>
+                    </div>
+                    <span className="text-lg">
                       {'🔥'.repeat(flames)}{'⬜'.repeat(4 - flames)}
                     </span>
-                    <span className="text-xs text-[#9CA3AF] ml-1">{flames}/4</span>
-                  </td>
-                  {weekKeys.map((wk) => (
-                    <td key={wk} className="px-4 py-4 text-center">
+                  </div>
+                  <div className="flex gap-2 mb-3">
+                    {weekKeys.map((wk, i) => (
                       <button
+                        key={wk}
                         onClick={() => onToggleComplete(row.participantDbId, wk)}
-                        title="클릭하면 완료 상태 토글"
-                        className={`w-7 h-7 rounded-full text-sm transition-all hover:scale-110 ${
+                        className={`flex-1 py-1.5 rounded-lg text-xs font-semibold transition-all ${
                           row.submission.completedWeeks[wk]
                             ? 'bg-[#E86A92] text-white'
-                            : 'bg-[#F3F4F6] text-[#D1D5DB]'
+                            : 'bg-[#F3F4F6] text-[#9CA3AF]'
                         }`}
                       >
-                        {row.submission.completedWeeks[wk] ? '🔥' : '○'}
+                        {i + 1}주
                       </button>
-                    </td>
-                  ))}
-                  <td className="px-4 py-4 text-[#9CA3AF] text-xs">
-                    {row.updatedAt
-                      ? new Date(row.updatedAt).toLocaleString('ko-KR', {
-                          month: '2-digit',
-                          day: '2-digit',
-                          hour: '2-digit',
-                          minute: '2-digit',
-                        })
-                      : '-'}
-                  </td>
-                  <td className="px-4 py-4 text-center">
+                    ))}
+                  </div>
+                  <div className="flex gap-2">
                     <button
                       onClick={() => onSelect(row.participantDbId)}
-                      className="px-3 py-1.5 rounded-lg bg-[#6D284A] text-white text-xs font-semibold hover:bg-[#5a1f3b] transition-colors"
+                      className="flex-1 py-2 rounded-xl bg-[#6D284A] text-white text-sm font-semibold hover:bg-[#5a1f3b] transition-colors"
                     >
-                      상세 보기
+                      답변 상세 보기
                     </button>
-                  </td>
-                </tr>
+                    <button
+                      onClick={() => onDelete(row.participantDbId, row.name)}
+                      className="px-4 py-2 rounded-xl text-sm font-semibold transition-colors"
+                      style={{ background: '#FEE2E2', color: '#DC2626', border: '1px solid #FECACA' }}
+                    >
+                      삭제
+                    </button>
+                  </div>
+                </div>
               );
             })}
-          </tbody>
-        </table>
-      </div>
-
-      {/* 모바일 카드 */}
-      <div className="md:hidden flex flex-col gap-4">
-        {rows.map((row) => {
-          const flames = calcFlameCount(row.submission.completedWeeks);
-          return (
-            <div
-              key={row.participantDbId}
-              className="rounded-2xl border border-[#FCE7EF] bg-white p-5 shadow-sm"
-            >
-              <div className="flex items-start justify-between mb-3">
-                <div>
-                  <p className="font-bold text-[#1F2937]">{row.name}</p>
-                  <p className="text-xs text-[#9CA3AF] font-mono">****{row.phoneLast4}</p>
-                </div>
-                <span className="text-lg">
-                  {'🔥'.repeat(flames)}{'⬜'.repeat(4 - flames)}
-                </span>
-              </div>
-              <div className="flex gap-2 mb-3">
-                {weekKeys.map((wk, i) => (
-                  <button
-                    key={wk}
-                    onClick={() => onToggleComplete(row.participantDbId, wk)}
-                    className={`flex-1 py-1.5 rounded-lg text-xs font-semibold transition-all ${
-                      row.submission.completedWeeks[wk]
-                        ? 'bg-[#E86A92] text-white'
-                        : 'bg-[#F3F4F6] text-[#9CA3AF]'
-                    }`}
-                  >
-                    {i + 1}주
-                  </button>
-                ))}
-              </div>
-              <button
-                onClick={() => onSelect(row.participantDbId)}
-                className="w-full py-2 rounded-xl bg-[#6D284A] text-white text-sm font-semibold hover:bg-[#5a1f3b] transition-colors"
-              >
-                답변 상세 보기
-              </button>
-            </div>
-          );
-        })}
-      </div>
+          </div>
+        </>
+      )}
     </div>
   );
 }
@@ -349,9 +539,10 @@ interface AdminDetailProps {
   row: AdminParticipantRow;
   onBack: () => void;
   onToggleComplete: (wk: keyof ParticipantSubmission['completedWeeks']) => void;
+  onDelete: () => void;
 }
 
-function AdminDetail({ row, onBack, onToggleComplete }: AdminDetailProps) {
+function AdminDetail({ row, onBack, onToggleComplete, onDelete }: AdminDetailProps) {
   const { submission } = row;
   const flames = calcFlameCount(submission.completedWeeks);
   const weekKeys: Array<keyof ParticipantSubmission['completedWeeks']> = [
@@ -360,12 +551,21 @@ function AdminDetail({ row, onBack, onToggleComplete }: AdminDetailProps) {
 
   return (
     <div>
-      <button
-        onClick={onBack}
-        className="flex items-center gap-2 text-sm text-[#6D284A] hover:text-[#5a1f3b] mb-6 font-semibold"
-      >
-        ← 목록으로
-      </button>
+      <div className="flex items-center justify-between mb-6">
+        <button
+          onClick={onBack}
+          className="flex items-center gap-2 text-sm text-[#6D284A] hover:text-[#5a1f3b] font-semibold"
+        >
+          ← 목록으로
+        </button>
+        <button
+          onClick={onDelete}
+          className="px-4 py-2 rounded-xl text-sm font-semibold transition-colors"
+          style={{ background: '#FEE2E2', color: '#DC2626', border: '1px solid #FECACA' }}
+        >
+          참가자 삭제
+        </button>
+      </div>
 
       <div className="rounded-2xl bg-[#111827] text-white p-6 mb-6">
         <p className="text-xs text-[#E86A92] uppercase tracking-wider mb-1">참가자 상세</p>
