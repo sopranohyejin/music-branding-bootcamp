@@ -95,7 +95,8 @@ export default function ParticipantBootcampView() {
     submission.completedWeeks.week2 &&
     submission.completedWeeks.week3 &&
     submission.completedWeeks.week4 &&
-    submission.weeklyMissions.final.finalIntro.trim().length > 0
+    submission.weeklyMissions.final.finalIntro.trim().length > 0 &&
+    submission.weeklyMissions.final.finalReflection.trim().length > 0
   );
 
   useEffect(() => {
@@ -614,6 +615,7 @@ export default function ParticipantBootcampView() {
                   })
                 }
                 onShowToast={showToast}
+                onComplete={() => setShowCelebration(true)}
               />
             ) : (
               <div

@@ -19,6 +19,7 @@ interface FinalMissionFormProps {
   bypassLock?: boolean;
   onUpdate: (data: FinalData) => void;
   onShowToast: (msg: string) => void;
+  onComplete?: () => void;
 }
 
 const WEEK_LABELS: Record<keyof CommonMissions, string> = {
@@ -36,6 +37,7 @@ export default function FinalMissionForm({
   bypassLock = false,
   onUpdate,
   onShowToast,
+  onComplete,
 }: FinalMissionFormProps) {
   const allCompleted = Object.values(completedWeeks).every(Boolean);
   const [recordTab, setRecordTab] = useState<keyof CommonMissions>('week1');
@@ -135,7 +137,7 @@ export default function FinalMissionForm({
         </ul>
       </div>
 
-      {/* Textarea */}
+      {/* Textarea - 최종 자기소개 */}
       <div className="rounded-2xl bg-white p-6" style={cardStyle}>
         <label className="block mb-2">
           <p className="text-sm font-bold text-[#1F2937] mb-1">최종 자기소개</p>
@@ -145,7 +147,7 @@ export default function FinalMissionForm({
         </label>
         <textarea
           value={finalData.finalIntro}
-          onChange={(e) => onUpdate({ finalIntro: e.target.value })}
+          onChange={(e) => onUpdate({ ...finalData, finalIntro: e.target.value })}
           placeholder="안녕하세요. 저는 ○○○입니다. [새로운 자기소개 작성]"
           rows={8}
           className="w-full border border-[#E5E7EB] rounded-xl px-4 py-3 text-sm text-[#1F2937] placeholder-[#D1D5DB] transition-colors"
@@ -160,6 +162,25 @@ export default function FinalMissionForm({
             최종 자기소개 복사하기
           </button>
         </div>
+      </div>
+
+      {/* Textarea - 부트캠프 소감 */}
+      <div className="rounded-2xl bg-white p-6" style={cardStyle}>
+        <label className="block mb-2">
+          <p className="text-sm font-bold text-[#1F2937] mb-1">
+            헬퍼지니 음악인 브랜딩 부트캠프를 하며 느낀 소감
+          </p>
+          <p className="text-xs text-[#9CA3AF]">
+            4주 동안 가장 크게 달라진 점, 느낀 점, 앞으로 실천하고 싶은 것을 적어주세요.
+          </p>
+        </label>
+        <textarea
+          value={finalData.finalReflection}
+          onChange={(e) => onUpdate({ ...finalData, finalReflection: e.target.value })}
+          placeholder="4주 동안 가장 크게 달라진 점, 느낀 점, 앞으로 실천하고 싶은 것을 적어주세요."
+          rows={6}
+          className="w-full border border-[#E5E7EB] rounded-xl px-4 py-3 text-sm text-[#1F2937] placeholder-[#D1D5DB] transition-colors"
+        />
       </div>
 
       {/* ── 성장 기록 섹션 ── */}
@@ -222,6 +243,36 @@ export default function FinalMissionForm({
             );
           })}
         </div>
+      </div>
+
+      {/* 최종미션 완료 버튼 */}
+      <div className="rounded-2xl p-6 text-center" style={{ background: '#FFFBEA', border: '1px solid #EFE4B0' }}>
+        <p className="text-sm text-[#6B7280] mb-4">
+          최종 자기소개와 소감을 모두 작성하셨나요?<br />
+          아래 버튼을 눌러 최종미션을 완료해주세요.
+        </p>
+        <button
+          onClick={() => {
+            if (!finalData.finalIntro.trim()) {
+              onShowToast('최종 자기소개를 먼저 작성해주세요.');
+              return;
+            }
+            if (!finalData.finalReflection.trim()) {
+              onShowToast('부트캠프 소감을 먼저 작성해주세요.');
+              return;
+            }
+            onComplete?.();
+          }}
+          className="px-8 py-3.5 rounded-xl text-sm font-bold transition-all hover:opacity-90 active:scale-[0.98]"
+          style={{
+            background: 'linear-gradient(135deg, #08224A, #0C2F60)',
+            color: '#F3D96B',
+            border: '1px solid rgba(243,217,107,0.3)',
+            boxShadow: '0 4px 16px rgba(8,34,74,0.25)',
+          }}
+        >
+          🎓 최종미션 완료하기
+        </button>
       </div>
 
       {/* Graduation card */}

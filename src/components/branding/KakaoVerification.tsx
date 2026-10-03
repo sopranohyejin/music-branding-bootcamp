@@ -113,7 +113,11 @@ function buildKakaoText(
   } else if (tab === 'final') {
     const d = submission.weeklyMissions.final;
     parts.push(
-      ['[02. 최종미션]', '최종 자기소개', `→ ${ans(d.finalIntro)}`].join('\n')
+      [
+        '[02. 최종미션]',
+        `최종 자기소개\n→ ${ans(d.finalIntro)}`,
+        `헬퍼지니 음악인 브랜딩 부트캠프를 하며 느낀 소감\n→ ${ans(d.finalReflection)}`,
+      ].join('\n\n')
     );
   }
 

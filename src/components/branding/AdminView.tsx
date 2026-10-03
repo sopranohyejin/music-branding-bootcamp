@@ -645,9 +645,19 @@ function AdminDetail({ row, onBack, onToggleComplete, onDelete }: AdminDetailPro
         <h3 className="text-base font-bold text-[#1F2937] mb-3">
           🎓 졸업 과제 - 최종 자기소개
         </h3>
-        <div className="rounded-2xl border border-[#FCE7EF] bg-white p-5">
+        <div className="rounded-2xl border border-[#FCE7EF] bg-white p-5 mb-4">
           <p className="text-sm text-[#1F2937] whitespace-pre-wrap min-h-[60px]">
             {submission.weeklyMissions.final.finalIntro || (
+              <span className="text-[#D1D5DB] italic">미작성</span>
+            )}
+          </p>
+        </div>
+        <h3 className="text-base font-bold text-[#1F2937] mb-3">
+          💬 부트캠프 소감
+        </h3>
+        <div className="rounded-2xl border border-[#FCE7EF] bg-white p-5">
+          <p className="text-sm text-[#1F2937] whitespace-pre-wrap min-h-[60px]">
+            {submission.weeklyMissions.final.finalReflection || (
               <span className="text-[#D1D5DB] italic">미작성</span>
             )}
           </p>

@@ -75,6 +75,7 @@ export interface Week4Data {
 
 export interface FinalData {
   finalIntro: string;
+  finalReflection: string; // 헬퍼지니 음악인 브랜딩 부트캠프를 하며 느낀 소감
 }
 
 export interface WeeklyMissions {
@@ -346,7 +347,7 @@ export function createDefaultSubmission(participantId: string): ParticipantSubmi
         works: '', measurableResults: '',
         missingEvidence1: '', missingEvidence2: '', missingEvidence3: '',
       },
-      final: { finalIntro: '' },
+      final: { finalIntro: '', finalReflection: '' },
     },
     completedWeeks: { week1: false, week2: false, week3: false, week4: false },
     updatedAt: '',
@@ -440,7 +441,7 @@ export function normalizeSubmission(raw: unknown, participantId: string): Partic
         missingEvidence2: strVal(w4.missingEvidence2),
         missingEvidence3: strVal(w4.missingEvidence3),
       },
-      final: { finalIntro: strVal(wf.finalIntro) },
+      final: { finalIntro: strVal(wf.finalIntro), finalReflection: strVal(wf.finalReflection) },
     },
     completedWeeks: {
       week1: boolVal(cw.week1), week2: boolVal(cw.week2),
