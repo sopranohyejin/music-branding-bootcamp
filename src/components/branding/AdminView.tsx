@@ -420,10 +420,14 @@ function AdminList({ rows, onSelect, onToggleComplete, onRefresh, onDelete }: Ad
                         ****{row.phoneLast4}
                       </td>
                       <td className="px-4 py-4 text-center">
-                        <span className="text-sm">
-                          {'🔥'.repeat(flames)}{'⬜'.repeat(4 - flames)}
+                        <span className="inline-flex items-center gap-0.5 mr-1">
+                          {Array.from({ length: 4 }).map((_, i) => (
+                            <span key={i} style={{ color: i < flames ? '#F3D96B' : '#D1D5DB', fontSize: '0.875rem' }}>
+                              {i < flames ? '★' : '☆'}
+                            </span>
+                          ))}
                         </span>
-                        <span className="text-xs text-[#9CA3AF] ml-1">{flames}/4</span>
+                        <span className="text-xs text-[#9CA3AF]">{flames}/4</span>
                       </td>
                       {weekKeys.map((wk) => (
                         <td key={wk} className="px-4 py-4 text-center">
@@ -436,7 +440,7 @@ function AdminList({ rows, onSelect, onToggleComplete, onRefresh, onDelete }: Ad
                                 : 'bg-[#F3F4F6] text-[#D1D5DB]'
                             }`}
                           >
-                            {row.submission.completedWeeks[wk] ? '🔥' : '○'}
+                            {row.submission.completedWeeks[wk] ? '★' : '○'}
                           </button>
                         </td>
                       ))}
@@ -488,8 +492,12 @@ function AdminList({ rows, onSelect, onToggleComplete, onRefresh, onDelete }: Ad
                       <p className="font-bold text-[#1F2937]">{row.name}</p>
                       <p className="text-xs text-[#9CA3AF] font-mono">****{row.phoneLast4}</p>
                     </div>
-                    <span className="text-lg">
-                      {'🔥'.repeat(flames)}{'⬜'.repeat(4 - flames)}
+                    <span className="inline-flex items-center gap-0.5">
+                      {Array.from({ length: 4 }).map((_, i) => (
+                        <span key={i} style={{ color: i < flames ? '#F3D96B' : '#D1D5DB', fontSize: '1rem' }}>
+                          {i < flames ? '★' : '☆'}
+                        </span>
+                      ))}
                     </span>
                   </div>
                   <div className="flex gap-2 mb-3">
@@ -574,8 +582,12 @@ function AdminDetail({ row, onBack, onToggleComplete, onDelete }: AdminDetailPro
           휴대폰 끝자리: ****{row.phoneLast4}
         </p>
         <div className="flex items-center gap-3 mt-4">
-          <span className="text-2xl">
-            {'🔥'.repeat(flames)}{'⬜'.repeat(4 - flames)}
+          <span className="inline-flex items-center gap-1">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <span key={i} style={{ color: i < flames ? '#F3D96B' : 'rgba(255,255,255,0.2)', fontSize: '1.35rem' }}>
+                {i < flames ? '★' : '☆'}
+              </span>
+            ))}
           </span>
           <span className="text-[#9CA3AF] text-sm">{flames}/4 완료</span>
         </div>
@@ -600,7 +612,7 @@ function AdminDetail({ row, onBack, onToggleComplete, onDelete }: AdminDetailPro
                   : 'bg-[#F3F4F6] text-[#9CA3AF] border border-[#E5E7EB]'
               }`}
             >
-              {i + 1}주차 {submission.completedWeeks[wk] ? '🔥 완료' : '○ 미완료'}
+              {i + 1}주차 {submission.completedWeeks[wk] ? '★ 완료' : '○ 미완료'}
             </button>
           ))}
         </div>
@@ -610,7 +622,7 @@ function AdminDetail({ row, onBack, onToggleComplete, onDelete }: AdminDetailPro
       {WEEKS.map((week) => (
         <div key={week.id} className="mb-8">
           <h3 className="text-base font-bold text-[#1F2937] mb-3 flex items-center gap-2">
-            {submission.completedWeeks[week.id] && <span>🔥</span>}
+            {submission.completedWeeks[week.id] && <span style={{ color: '#F3D96B' }}>★</span>}
             {week.label}: {week.title}
           </h3>
 
