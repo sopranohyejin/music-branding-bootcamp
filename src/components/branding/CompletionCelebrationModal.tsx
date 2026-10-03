@@ -107,11 +107,11 @@ export default function CompletionCelebrationModal({ participantName, onClose }:
             </div>
 
             {/* 아이콘 */}
-            <div className="text-5xl mb-1 leading-none">🪔</div>
+            <div className="text-5xl mb-1 leading-none">🎵</div>
             <div className="flex justify-center gap-1.5 mb-5 text-base">
-              <span>✨</span>
-              <span>🎓</span>
-              <span>✨</span>
+              <span>🎶</span>
+              <span>🎼</span>
+              <span>🎶</span>
             </div>
 
             {/* 이름 */}
@@ -124,7 +124,7 @@ export default function CompletionCelebrationModal({ participantName, onClose }:
               className="title-glow text-2xl font-black mb-3 leading-tight"
               style={{ color: '#F3D96B' }}
             >
-              4주 부트캠프 완주!
+              헬퍼지니 음악인<br />브랜딩 부트캠프 완주!
             </h2>
 
             {/* 구분선 */}

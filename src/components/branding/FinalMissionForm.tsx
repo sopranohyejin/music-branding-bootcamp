@@ -263,7 +263,7 @@ export default function FinalMissionForm({
             }
             onComplete?.();
           }}
-          className="px-8 py-3.5 rounded-xl text-sm font-bold transition-all hover:opacity-90 active:scale-[0.98]"
+          className="w-full py-6 rounded-2xl text-xl font-black transition-all hover:opacity-90 active:scale-[0.98]"
           style={{
             background: 'linear-gradient(135deg, #08224A, #0C2F60)',
             color: '#F3D96B',
@@ -273,15 +273,6 @@ export default function FinalMissionForm({
         >
           🎓 최종미션 완료하기
         </button>
-      </div>
-
-      {/* Graduation card */}
-      <div className="rounded-2xl text-white p-6 text-center" style={{ background: '#08224A' }}>
-        <p className="text-3xl mb-3">🎓</p>
-        <p className="text-lg font-bold" style={{ color: '#F3D96B' }}>4주 부트캠프 수료!</p>
-        <p className="text-sm mt-2" style={{ color: '#B8C5D9' }}>
-          소득있는 음악인이 되는 여정을 함께해주셔서 감사합니다.
-        </p>
       </div>
     </section>
   );

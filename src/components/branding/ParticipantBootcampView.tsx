@@ -77,7 +77,6 @@ export default function ParticipantBootcampView() {
   const [activeTab, setActiveTab] = useState<ActiveTab>('week1');
   const [saveStatus, setSaveStatus] = useState<SaveStatus>('idle');
   const [showCelebration, setShowCelebration] = useState(false);
-  const [celebrationTriggered, setCelebrationTriggered] = useState(false);
   const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const idleTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const autoSaveIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -98,13 +97,6 @@ export default function ParticipantBootcampView() {
     submission.weeklyMissions.final.finalIntro.trim().length > 0 &&
     submission.weeklyMissions.final.finalReflection.trim().length > 0
   );
-
-  useEffect(() => {
-    if (isAllComplete && !celebrationTriggered) {
-      setShowCelebration(true);
-      setCelebrationTriggered(true);
-    }
-  }, [isAllComplete, celebrationTriggered]);
 
   // ── 마운트 시 localStorage 캐시 확인 → Supabase 복원 ──────
   useEffect(() => {
