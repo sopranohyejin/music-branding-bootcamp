@@ -84,7 +84,7 @@ function buildKakaoText(
         '[02. 3주차 미션]',
         `고객 문제 10개\n${problems}`,
         `선택한 고객 문제\n→ ${ans(d.selectedProblem)}`,
-        `30초 셀프 스피치 대본\n→ ${ans(d.selfPitchScript)}`,
+        `30초 셀 스피치 대본\n→ ${ans(d.selfPitchScript)}`,
         `녹음 완료: ${d.recordingDone ? 'O' : '미완료'}`,
       ].join('\n\n')
     );

@@ -62,8 +62,8 @@ export default function Week3Form({
   if (!isReleased) {
     return (
       <MissionCard
-        title="3주차: 고객 문제와 30초 셀프 스피치"
-        subtitle="가치 + 셀프 스피치: 고객 중심 사고"
+        title="3주차: 고객 문제와 30초 셀 스피치"
+        subtitle="가치 + 셀 스피치: 고객 중심 사고"
         locked
       />
     );
@@ -76,8 +76,8 @@ export default function Week3Form({
         <p className="text-xs uppercase tracking-wider font-semibold mb-2" style={{ color: '#F3D96B' }}>
           3주차 미션
         </p>
-        <h3 className="text-lg font-bold mb-1">고객 문제와 30초 셀프 스피치</h3>
-        <p className="text-sm" style={{ color: '#B8C5D9' }}>가치 + 셀프 스피치: 고객 중심 사고</p>
+        <h3 className="text-lg font-bold mb-1">고객 문제와 30초 셀 스피치</h3>
+        <p className="text-sm" style={{ color: '#B8C5D9' }}>가치 + 셀 스피치: 고객 중심 사고</p>
       </div>
 
       {isLocked && (
@@ -130,9 +130,9 @@ export default function Week3Form({
         </div>
       </MissionCard>
 
-      {/* 미션 ② 30초 셀프 스피치 */}
+      {/* 미션 ② 30초 셀 스피치 */}
       <MissionCard
-        title="미션 ② 1가지 문제 선정 후 30초 셀프 스피치 작성 + 녹음"
+        title="미션 ② 1가지 문제 선정 후 30초 셀 스피치 작성 + 녹음"
         guide="공식: 고객의 문제 → 공감 → 내가 줄 수 있는 도움(나의 계획) → 기대할 변화"
       >
         {/* 선택한 문제 */}
@@ -170,7 +170,7 @@ export default function Week3Form({
           return (
             <div className="mb-3">
               <div className="flex items-center justify-between mb-1.5">
-                <p className="text-xs font-semibold text-[#374151]">30초 셀프 스피치 대본</p>
+                <p className="text-xs font-semibold text-[#374151]">30초 셀 스피치 대본</p>
                 {!isLocked && !editing && (
                   <button onClick={() => startEdit(key)} className="text-xs px-3 py-1 rounded-lg font-semibold" style={{ border: '1px solid #D1D9E6', color: '#374151', background: '#F9FAFB' }}>수정하기</button>
                 )}

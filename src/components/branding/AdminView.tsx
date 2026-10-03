@@ -525,7 +525,7 @@ function AdminWeekAnswers({
       <>
         {answerBlock('고객 문제 10개', wm.week3.customerProblems)}
         {answerBlock('선택한 고객 문제', wm.week3.selectedProblem)}
-        {answerBlock('30초 셀프 스피치 대본', wm.week3.selfPitchScript)}
+        {answerBlock('30초 셀 스피치 대본', wm.week3.selfPitchScript)}
         {answerBlock('녹음 완료', wm.week3.recordingDone)}
         {answerBlock('녹음 인증 메모', wm.week3.recordingNote)}
       </>

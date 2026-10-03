@@ -88,7 +88,7 @@ export default function FinalMissionForm({
         </p>
         <h2 className="text-xl font-bold mb-1">나를 선택해야 하는 이유</h2>
         <p className="text-sm leading-relaxed" style={{ color: '#B8C5D9' }}>
-          처음 1주차에 작성했던 자기소개를 꺼내 4주 동안 배운 각인 + 가치 + 셀프 스피치 + 신용을
+          처음 1주차에 작성했던 자기소개를 꺼내 4주 동안 배운 각인 + 가치 + 셀 스피치 + 신용을
           모두 적용해서 최종 자기소개를 작성합니다.
         </p>
       </div>

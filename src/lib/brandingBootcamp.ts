@@ -170,9 +170,9 @@ export const WEEKS: WeekData[] = [
   {
     id: 'week3',
     label: '3주차',
-    title: '고객 문제와 30초 셀프 스피치',
-    lectureTitle: '가치 + 셀프 스피치: 고객 중심 사고',
-    individualMissionTitle: '30초 셀프 스피치',
+    title: '고객 문제와 30초 셀 스피치',
+    lectureTitle: '가치 + 셀 스피치: 고객 중심 사고',
+    individualMissionTitle: '30초 셀 스피치',
     releaseDate: '2026-10-20T00:00:00+09:00',
     lectureDate: '2026-10-20T21:00:00+09:00',
   },
@@ -216,8 +216,8 @@ export const STRUCTURE_TABLE: StructureRow[] = [
   {
     week: '3주',
     schedule: '10/20 (화)',
-    lecture: '가치 + 셀프 스피치: 고객 중심 사고',
-    individualMission: '30초 셀프 스피치',
+    lecture: '가치 + 셀 스피치: 고객 중심 사고',
+    individualMission: '30초 셀 스피치',
     commonMission: '비즈니스 점검표 3차',
   },
   {
