@@ -416,11 +416,14 @@ export default function ParticipantBootcampView() {
     });
   }
 
-  const releasedWeeks = WEEKS.map((w) => isWeekReleased(w));
+  // 테스트 계정: "관리자 / 1234" → 모든 주차 시간 제한 없이 미리 열람 가능
+  const isTestParticipant = participantName === '관리자';
 
-  // 다음 주차가 공개되면 해당 주차는 잠금(읽기 전용). TEST_MODE 에서는 항상 편집 가능.
+  const releasedWeeks = WEEKS.map((w) => isTestParticipant || isWeekReleased(w));
+
+  // 다음 주차가 공개되면 해당 주차는 잠금(읽기 전용). TEST_MODE / 테스트 계정은 항상 편집 가능.
   function isWeekLocked(weekId: string): boolean {
-    if (TEST_MODE) return false;
+    if (TEST_MODE || isTestParticipant) return false;
     const idx = WEEKS.findIndex((w) => w.id === weekId);
     if (idx < 0 || idx >= WEEKS.length - 1) return false;
     return isWeekReleased(WEEKS[idx + 1]);
@@ -478,7 +481,7 @@ export default function ParticipantBootcampView() {
                 </button>
               );
             })}
-            {isFinalReleased() ? (
+            {(isTestParticipant || isFinalReleased()) ? (
               <button
                 onClick={() => setActiveTab('final')}
                 className="flex-shrink-0 px-4 py-2 rounded-full text-xs transition-all duration-150"
@@ -597,12 +600,13 @@ export default function ParticipantBootcampView() {
             />
           )}
           {activeTab === 'final' && (
-            isFinalReleased() ? (
+            (isTestParticipant || isFinalReleased()) ? (
               <FinalMissionForm
                 finalData={submission.weeklyMissions.final}
                 week1Data={submission.weeklyMissions.week1}
                 commonMissions={submission.commonMissions}
                 completedWeeks={submission.completedWeeks}
+                bypassLock={isTestParticipant}
                 onUpdate={(d: FinalData) =>
                   updateAndSave({
                     ...submission,

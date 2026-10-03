@@ -16,6 +16,7 @@ interface FinalMissionFormProps {
   week1Data: Week1Data;
   commonMissions: CommonMissions;
   completedWeeks: CompletedWeeks;
+  bypassLock?: boolean;
   onUpdate: (data: FinalData) => void;
   onShowToast: (msg: string) => void;
 }
@@ -32,14 +33,15 @@ export default function FinalMissionForm({
   week1Data,
   commonMissions,
   completedWeeks,
+  bypassLock = false,
   onUpdate,
   onShowToast,
 }: FinalMissionFormProps) {
   const allCompleted = Object.values(completedWeeks).every(Boolean);
   const [recordTab, setRecordTab] = useState<keyof CommonMissions>('week1');
 
-  // 테스트 모드에서는 잠금 우회 / 운영 모드에서는 4주 완료 필요
-  if (!TEST_MODE && !allCompleted) {
+  // 테스트 모드 또는 테스트 계정(bypassLock)이면 잠금 우회 / 운영 모드에서는 4주 완료 필요
+  if (!TEST_MODE && !allCompleted && !bypassLock) {
     const completedCount = Object.values(completedWeeks).filter(Boolean).length;
     return (
       <section className="max-w-3xl mx-auto px-6 py-10">
