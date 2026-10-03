@@ -41,6 +41,7 @@ import FinalMissionForm from './FinalMissionForm';
 import BrandingFormula from './BrandingFormula';
 import Toast from './Toast';
 import KakaoVerification from './KakaoVerification';
+import CompletionCelebrationModal from './CompletionCelebrationModal';
 
 type ActiveTab = 'week1' | 'week2' | 'week3' | 'week4' | 'final';
 type SaveStatus = 'idle' | 'saving' | 'saved' | 'error';
@@ -75,6 +76,8 @@ export default function ParticipantBootcampView() {
   const [toastVisible, setToastVisible] = useState(false);
   const [activeTab, setActiveTab] = useState<ActiveTab>('week1');
   const [saveStatus, setSaveStatus] = useState<SaveStatus>('idle');
+  const [showCelebration, setShowCelebration] = useState(false);
+  const [celebrationTriggered, setCelebrationTriggered] = useState(false);
   const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const idleTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const autoSaveIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -84,6 +87,23 @@ export default function ParticipantBootcampView() {
   const participantDbIdRef = useRef<string>('');
   submissionRef.current = submission;
   participantDbIdRef.current = participantDbId;
+
+  // ── 전체 미션 완주 감지 ────────────────────────────────────
+  const isAllComplete = !!(
+    submission &&
+    submission.completedWeeks.week1 &&
+    submission.completedWeeks.week2 &&
+    submission.completedWeeks.week3 &&
+    submission.completedWeeks.week4 &&
+    submission.weeklyMissions.final.finalIntro.trim().length > 0
+  );
+
+  useEffect(() => {
+    if (isAllComplete && !celebrationTriggered) {
+      setShowCelebration(true);
+      setCelebrationTriggered(true);
+    }
+  }, [isAllComplete, celebrationTriggered]);
 
   // ── 마운트 시 localStorage 캐시 확인 → Supabase 복원 ──────
   useEffect(() => {
@@ -425,32 +445,58 @@ export default function ParticipantBootcampView() {
       >
         <div className="max-w-3xl mx-auto px-6">
           <div className="flex gap-2 py-3 overflow-x-auto">
-            {WEEKS.map((w, i) =>
-              releasedWeeks[i] ? (
+            {WEEKS.map((w, i) => {
+              const isReleased = releasedWeeks[i];
+              const isSelected = activeTab === w.id;
+              const isCompleted = submission.completedWeeks[w.id as keyof typeof submission.completedWeeks];
+              if (isReleased) {
+                return (
+                  <button
+                    key={w.id}
+                    onClick={() => setActiveTab(w.id as ActiveTab)}
+                    className="flex-shrink-0 px-4 py-2 rounded-full text-xs transition-all duration-150"
+                    style={tabStyle(isSelected)}
+                  >
+                    {isCompleted ? '✅ ' : ''}{w.label}
+                  </button>
+                );
+              }
+              return (
                 <button
                   key={w.id}
-                  onClick={() => setActiveTab(w.id as ActiveTab)}
-                  className="flex-shrink-0 px-4 py-2 rounded-full text-xs transition-all duration-150"
-                  style={tabStyle(activeTab === w.id)}
+                  onClick={() => showToast('해당 미션은 아직 공개 전입니다.')}
+                  className="flex-shrink-0 px-4 py-2 rounded-full text-xs transition-colors"
+                  style={{
+                    background: 'rgba(255,255,255,0.35)',
+                    color: 'rgba(8,34,74,0.4)',
+                    cursor: 'not-allowed',
+                    border: '1px solid rgba(209,217,230,0.5)',
+                    fontWeight: '600',
+                  }}
                 >
-                  {w.label}
+                  🔒 {w.label}
                 </button>
-              ) : null,
-            )}
+              );
+            })}
             {isFinalReleased() ? (
               <button
                 onClick={() => setActiveTab('final')}
                 className="flex-shrink-0 px-4 py-2 rounded-full text-xs transition-all duration-150"
                 style={tabStyle(activeTab === 'final')}
               >
-                최종미션
+                {submission.weeklyMissions.final.finalIntro.trim().length > 0 ? '✅ ' : ''}최종미션
               </button>
             ) : (
               <button
-                disabled
-                className="flex-shrink-0 px-4 py-2 rounded-full text-xs"
-                style={{ background: '#F3F4F6', color: '#9CA3AF', cursor: 'not-allowed', border: '1px solid #E5E7EB' }}
-                title="2026-11-03 21:50 공개 예정"
+                onClick={() => showToast('최종미션은 2026년 11월 3일(화) 21:50에 공개됩니다.')}
+                className="flex-shrink-0 px-4 py-2 rounded-full text-xs transition-colors"
+                style={{
+                  background: 'rgba(255,255,255,0.35)',
+                  color: 'rgba(8,34,74,0.4)',
+                  cursor: 'not-allowed',
+                  border: '1px solid rgba(209,217,230,0.5)',
+                  fontWeight: '600',
+                }}
               >
                 🔒 최종미션
               </button>
@@ -625,6 +671,30 @@ export default function ParticipantBootcampView() {
             ? '저장됨 ✓'
             : '저장 실패. 다시 시도해주세요.'}
         </div>
+      )}
+
+      {/* 완주 카드 다시 보기 버튼 (전체 완료 시 좌측 하단에 표시) */}
+      {isAllComplete && !showCelebration && (
+        <button
+          onClick={() => setShowCelebration(true)}
+          className="fixed bottom-5 left-5 z-50 flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold shadow-lg transition-opacity hover:opacity-90 active:scale-95"
+          style={{
+            background: 'linear-gradient(135deg, #0C2040, #07152F)',
+            color: '#F3D96B',
+            border: '1px solid rgba(243,217,107,0.3)',
+            boxShadow: '0 4px 16px rgba(0,0,0,0.4)',
+          }}
+        >
+          🎓 완주 카드 보기
+        </button>
+      )}
+
+      {/* 완주 축하 모달 */}
+      {showCelebration && (
+        <CompletionCelebrationModal
+          participantName={participantName}
+          onClose={() => setShowCelebration(false)}
+        />
       )}
 
       {/* E. 브랜딩 공식 */}
