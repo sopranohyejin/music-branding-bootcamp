@@ -34,6 +34,70 @@ const MISSING_FIELDS: Array<{ key: keyof Week4Data; label: string }> = [
   { key: 'missingEvidence3', label: '부족한 증거 3' },
 ];
 
+// ── 공유 필드 props ────────────────────────────────────────────
+interface FieldSharedProps {
+  isLocked: boolean;
+  editingSet: Set<string>;
+  onStartEdit: (key: string) => void;
+  onSaveField: (key: string) => void;
+}
+
+// ── 모듈 레벨 EditableTextarea ─────────────────────────────────
+// NOTE: 반드시 컴포넌트 함수 밖에 정의해야 함.
+// 안에 정의하면 렌더마다 새 함수 참조 → React가 매번 언마운트/리마운트 → 포커스 소실 버그.
+function EditableTextarea({
+  fieldKey, label, value, placeholder, rows = 2,
+  onChange, isLocked, editingSet, onStartEdit, onSaveField,
+}: {
+  fieldKey: string; label: string; value: string; placeholder?: string; rows?: number;
+  onChange: (v: string) => void;
+} & FieldSharedProps) {
+  const editing = !isLocked && editingSet.has(fieldKey);
+  return (
+    <div className="mb-3">
+      <div className="flex items-center justify-between mb-1.5">
+        <p className="text-xs font-semibold text-[#374151]">{label}</p>
+        {!isLocked && !editing && (
+          <button
+            onClick={() => onStartEdit(fieldKey)}
+            className="text-xs px-3 py-1 rounded-lg font-semibold"
+            style={{ border: '1px solid #D1D9E6', color: '#374151', background: '#F9FAFB' }}
+          >
+            수정하기
+          </button>
+        )}
+      </div>
+      {editing ? (
+        <>
+          <textarea
+            value={value}
+            onChange={e => onChange(e.target.value)}
+            placeholder={placeholder}
+            rows={rows}
+            className="w-full rounded-xl px-4 py-3 text-sm border border-[#E5E7EB] bg-[#FCFCFD] text-[#07152F]"
+          />
+          <div className="flex justify-end mt-1.5">
+            <button
+              onClick={() => onSaveField(fieldKey)}
+              className="text-xs px-4 py-1.5 rounded-lg font-semibold"
+              style={{ background: '#08224A', color: '#FFF2A8' }}
+            >
+              저장하기
+            </button>
+          </div>
+        </>
+      ) : (
+        <div className="rounded-xl px-4 py-3 min-h-[2.5rem]" style={{ background: '#F9FAFB', border: '1px solid #F3F4F6' }}>
+          {value
+            ? <p className="text-sm text-[#374151] whitespace-pre-wrap leading-relaxed">{value}</p>
+            : <p className="text-sm text-[#D1D5DB]">—</p>}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ── Week4Form ──────────────────────────────────────────────────
 export default function Week4Form({
   data,
   isReleased,
@@ -69,34 +133,7 @@ export default function Week4Form({
     );
   }
 
-  function EditableTextarea(props: {
-    fieldKey: string; label: string; value: string; placeholder?: string; rows?: number;
-    onChange: (v: string) => void;
-  }) {
-    const editing = !isLocked && editingSet.has(props.fieldKey);
-    return (
-      <div className="mb-3">
-        <div className="flex items-center justify-between mb-1.5">
-          <p className="text-xs font-semibold text-[#374151]">{props.label}</p>
-          {!isLocked && !editing && (
-            <button onClick={() => startEdit(props.fieldKey)} className="text-xs px-3 py-1 rounded-lg font-semibold" style={{ border: '1px solid #D1D9E6', color: '#374151', background: '#F9FAFB' }}>수정하기</button>
-          )}
-        </div>
-        {editing ? (
-          <>
-            <textarea value={props.value} onChange={e => props.onChange(e.target.value)} placeholder={props.placeholder} rows={props.rows ?? 2} className="w-full rounded-xl px-4 py-3 text-sm border border-[#E5E7EB] bg-[#FCFCFD] text-[#07152F]" />
-            <div className="flex justify-end mt-1.5">
-              <button onClick={() => saveField(props.fieldKey)} className="text-xs px-4 py-1.5 rounded-lg font-semibold" style={{ background: '#08224A', color: '#FFF2A8' }}>저장하기</button>
-            </div>
-          </>
-        ) : (
-          <div className="rounded-xl px-4 py-3 min-h-[2.5rem]" style={{ background: '#F9FAFB', border: '1px solid #F3F4F6' }}>
-            {props.value ? <p className="text-sm text-[#374151] whitespace-pre-wrap leading-relaxed">{props.value}</p> : <p className="text-sm text-[#D1D5DB]">—</p>}
-          </div>
-        )}
-      </div>
-    );
-  }
+  const fp: FieldSharedProps = { isLocked, editingSet, onStartEdit: startEdit, onSaveField: saveField };
 
   return (
     <div className="flex flex-col gap-4">
@@ -123,6 +160,7 @@ export default function Week4Form({
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4">
           {EVIDENCE_FIELDS.map(({ key, label, placeholder }) => (
             <EditableTextarea
+              {...fp}
               key={key}
               fieldKey={key as string}
               label={label}
@@ -148,6 +186,7 @@ export default function Week4Form({
       >
         {MISSING_FIELDS.map(({ key, label }) => (
           <EditableTextarea
+            {...fp}
             key={key}
             fieldKey={key as string}
             label={label}
@@ -159,7 +198,13 @@ export default function Week4Form({
         ))}
       </MissionCard>
 
-      <CompleteButton isCompleted={isCompleted} isLocked={isLocked} weekLabel="4주차" onComplete={onComplete} onUncomplete={onUncomplete} />
+      <CompleteButton
+        isCompleted={isCompleted}
+        isLocked={isLocked}
+        weekLabel="4주차"
+        onComplete={onComplete}
+        onUncomplete={onUncomplete}
+      />
     </div>
   );
 }

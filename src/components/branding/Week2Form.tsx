@@ -21,6 +21,123 @@ interface Week2FormProps {
   onShowToast: (msg: string) => void;
 }
 
+// ── 공유 필드 props ────────────────────────────────────────────
+interface FieldSharedProps {
+  isLocked: boolean;
+  editingSet: Set<string>;
+  onStartEdit: (key: string) => void;
+  onSaveField: (key: string) => void;
+}
+
+// ── 모듈 레벨 EditableTextarea ─────────────────────────────────
+// NOTE: 반드시 컴포넌트 함수 밖에 정의해야 함.
+// 안에 정의하면 렌더마다 새 함수 참조 → React가 매번 언마운트/리마운트 → 포커스 소실 버그.
+function EditableTextarea({
+  fieldKey, label, value, placeholder, rows = 2,
+  onChange, isLocked, editingSet, onStartEdit, onSaveField,
+}: {
+  fieldKey: string; label: string; value: string; placeholder?: string; rows?: number;
+  onChange: (v: string) => void;
+} & FieldSharedProps) {
+  const editing = !isLocked && editingSet.has(fieldKey);
+  return (
+    <div className="mb-3">
+      <div className="flex items-center justify-between mb-1.5">
+        <p className="text-xs font-semibold text-[#374151]">{label}</p>
+        {!isLocked && !editing && (
+          <button
+            onClick={() => onStartEdit(fieldKey)}
+            className="text-xs px-3 py-1 rounded-lg font-semibold"
+            style={{ border: '1px solid #D1D9E6', color: '#374151', background: '#F9FAFB' }}
+          >
+            수정하기
+          </button>
+        )}
+      </div>
+      {editing ? (
+        <>
+          <textarea
+            value={value}
+            onChange={e => onChange(e.target.value)}
+            placeholder={placeholder}
+            rows={rows}
+            className="w-full rounded-xl px-4 py-3 text-sm border border-[#E5E7EB] bg-[#FCFCFD] text-[#07152F]"
+          />
+          <div className="flex justify-end mt-1.5">
+            <button
+              onClick={() => onSaveField(fieldKey)}
+              className="text-xs px-4 py-1.5 rounded-lg font-semibold"
+              style={{ background: '#08224A', color: '#FFF2A8' }}
+            >
+              저장하기
+            </button>
+          </div>
+        </>
+      ) : (
+        <div className="rounded-xl px-4 py-3 min-h-[2.5rem]" style={{ background: '#F9FAFB', border: '1px solid #F3F4F6' }}>
+          {value
+            ? <p className="text-sm text-[#374151] whitespace-pre-wrap leading-relaxed">{value}</p>
+            : <p className="text-sm text-[#D1D5DB]">—</p>}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ── 모듈 레벨 EditableInput ────────────────────────────────────
+function EditableInput({
+  fieldKey, label, value, placeholder,
+  onChange, isLocked, editingSet, onStartEdit, onSaveField,
+}: {
+  fieldKey: string; label: string; value: string; placeholder?: string;
+  onChange: (v: string) => void;
+} & FieldSharedProps) {
+  const editing = !isLocked && editingSet.has(fieldKey);
+  return (
+    <div className="mb-3">
+      <div className="flex items-center justify-between mb-1.5">
+        <p className="text-xs font-semibold text-[#374151]">{label}</p>
+        {!isLocked && !editing && (
+          <button
+            onClick={() => onStartEdit(fieldKey)}
+            className="text-xs px-3 py-1 rounded-lg font-semibold"
+            style={{ border: '1px solid #D1D9E6', color: '#374151', background: '#F9FAFB' }}
+          >
+            수정하기
+          </button>
+        )}
+      </div>
+      {editing ? (
+        <>
+          <input
+            type="text"
+            value={value}
+            onChange={e => onChange(e.target.value)}
+            placeholder={placeholder}
+            className="w-full rounded-xl px-4 py-2.5 text-sm border border-[#E5E7EB] bg-[#FCFCFD] text-[#1F2937]"
+          />
+          <div className="flex justify-end mt-1.5">
+            <button
+              onClick={() => onSaveField(fieldKey)}
+              className="text-xs px-4 py-1.5 rounded-lg font-semibold"
+              style={{ background: '#08224A', color: '#FFF2A8' }}
+            >
+              저장하기
+            </button>
+          </div>
+        </>
+      ) : (
+        <div className="rounded-xl px-4 py-2.5 min-h-[2.5rem]" style={{ background: '#F9FAFB', border: '1px solid #F3F4F6' }}>
+          {value
+            ? <p className="text-sm text-[#374151]">{value}</p>
+            : <p className="text-sm text-[#D1D5DB]">—</p>}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ── Week2Form ──────────────────────────────────────────────────
 export default function Week2Form({
   data,
   isReleased,
@@ -31,6 +148,7 @@ export default function Week2Form({
   onUncomplete,
   onShowToast,
 }: Week2FormProps) {
+  void onShowToast; // 현재 미사용이지만 인터페이스 호환성 유지
   const isCompleted = completedWeeks.week2;
 
   const [editingSet, setEditingSet] = useState<Set<string>>(() => {
@@ -69,61 +187,7 @@ export default function Week2Form({
     );
   }
 
-  // 편집 가능한 단일 텍스트 필드 렌더링 헬퍼
-  function EditableTextarea(props: {
-    fieldKey: string; label: string; value: string; placeholder?: string; rows?: number;
-    onChange: (v: string) => void;
-  }) {
-    const editing = !isLocked && editingSet.has(props.fieldKey);
-    return (
-      <div className="mb-3">
-        <div className="flex items-center justify-between mb-1.5">
-          <p className="text-xs font-semibold text-[#374151]">{props.label}</p>
-          {!isLocked && !editing && (
-            <button onClick={() => startEdit(props.fieldKey)} className="text-xs px-3 py-1 rounded-lg font-semibold" style={{ border: '1px solid #D1D9E6', color: '#374151', background: '#F9FAFB' }}>수정하기</button>
-          )}
-        </div>
-        {editing ? (
-          <>
-            <textarea value={props.value} onChange={e => props.onChange(e.target.value)} placeholder={props.placeholder} rows={props.rows ?? 2} className="w-full rounded-xl px-4 py-3 text-sm border border-[#E5E7EB] bg-[#FCFCFD] text-[#07152F]" />
-            <div className="flex justify-end mt-1.5">
-              <button onClick={() => saveField(props.fieldKey)} className="text-xs px-4 py-1.5 rounded-lg font-semibold" style={{ background: '#08224A', color: '#FFF2A8' }}>저장하기</button>
-            </div>
-          </>
-        ) : (
-          <div className="rounded-xl px-4 py-3 min-h-[2.5rem]" style={{ background: '#F9FAFB', border: '1px solid #F3F4F6' }}>
-            {props.value ? <p className="text-sm text-[#374151] whitespace-pre-wrap leading-relaxed">{props.value}</p> : <p className="text-sm text-[#D1D5DB]">—</p>}
-          </div>
-        )}
-      </div>
-    );
-  }
-
-  function EditableInput(props: { fieldKey: string; label: string; value: string; placeholder?: string; onChange: (v: string) => void; }) {
-    const editing = !isLocked && editingSet.has(props.fieldKey);
-    return (
-      <div className="mb-3">
-        <div className="flex items-center justify-between mb-1.5">
-          <p className="text-xs font-semibold text-[#374151]">{props.label}</p>
-          {!isLocked && !editing && (
-            <button onClick={() => startEdit(props.fieldKey)} className="text-xs px-3 py-1 rounded-lg font-semibold" style={{ border: '1px solid #D1D9E6', color: '#374151', background: '#F9FAFB' }}>수정하기</button>
-          )}
-        </div>
-        {editing ? (
-          <>
-            <input type="text" value={props.value} onChange={e => props.onChange(e.target.value)} placeholder={props.placeholder} className="w-full rounded-xl px-4 py-2.5 text-sm border border-[#E5E7EB] bg-[#FCFCFD] text-[#1F2937]" />
-            <div className="flex justify-end mt-1.5">
-              <button onClick={() => saveField(props.fieldKey)} className="text-xs px-4 py-1.5 rounded-lg font-semibold" style={{ background: '#08224A', color: '#FFF2A8' }}>저장하기</button>
-            </div>
-          </>
-        ) : (
-          <div className="rounded-xl px-4 py-2.5 min-h-[2.5rem]" style={{ background: '#F9FAFB', border: '1px solid #F3F4F6' }}>
-            {props.value ? <p className="text-sm text-[#374151]">{props.value}</p> : <p className="text-sm text-[#D1D5DB]">—</p>}
-          </div>
-        )}
-      </div>
-    );
-  }
+  const fp: FieldSharedProps = { isLocked, editingSet, onStartEdit: startEdit, onSaveField: saveField };
 
   return (
     <div className="flex flex-col gap-4">
@@ -134,14 +198,26 @@ export default function Week2Form({
         <p className="text-sm" style={{ color: '#B8C5D9' }}>각인: 노출 + 특징</p>
       </div>
 
-      {isLocked && <p className="text-xs font-medium" style={{ color: '#9CA3AF' }}>🔒 지난 주차의 답변은 읽기 전용입니다.</p>}
+      {isLocked && (
+        <p className="text-xs font-medium" style={{ color: '#9CA3AF' }}>
+          🔒 지난 주차의 답변은 읽기 전용입니다.
+        </p>
+      )}
 
       {/* 미션 ① 타깃 */}
       <MissionCard
         title="미션 ① 나의 타깃 정하기"
         guide={`내가 도움을 줄 수 있는 사람/주고싶은 사람은 누구인가?\n"모든 사람" 금지.\n\n• 누구에게?\n• 어떤 상황에서?\n• 어떤 문제를 가진 사람에게?\n화살촉처럼 뾰족하게 구체적으로 작성`}
       >
-        <EditableTextarea fieldKey="targetCustomer" label="나의 타깃" value={data.targetCustomer} onChange={v => onUpdate({ ...data, targetCustomer: v })} placeholder="예: 음악을 오래 했지만 수익이 없는 20-30대 음악 강사" rows={3} />
+        <EditableTextarea
+          {...fp}
+          fieldKey="targetCustomer"
+          label="나의 타깃"
+          value={data.targetCustomer}
+          onChange={v => onUpdate({ ...data, targetCustomer: v })}
+          placeholder="예: 음악을 오래 했지만 수익이 없는 20-30대 음악 강사"
+          rows={3}
+        />
       </MissionCard>
 
       {/* 미션 ② 특징 3개 */}
@@ -149,14 +225,22 @@ export default function Week2Form({
         title="미션 ② 나의 특징 3개 찾기"
         guide="경력 / 기술 / 경험 / 성격 / 방법론 / 결과 / 콘텐츠 중에서 나만의 특징이 될 수 있는 것 3개 찾기"
       >
-        <EditableInput fieldKey="feature1" label="특징 1" value={data.feature1} onChange={v => onUpdate({ ...data, feature1: v })} placeholder="예: 10년 이상 성악 전공" />
-        <EditableInput fieldKey="feature2" label="특징 2" value={data.feature2} onChange={v => onUpdate({ ...data, feature2: v })} placeholder="예: 발성 교정 전문" />
-        <EditableInput fieldKey="feature3" label="특징 3" value={data.feature3} onChange={v => onUpdate({ ...data, feature3: v })} placeholder="예: 초보자도 3개월 안에 발표 가능" />
+        <EditableInput {...fp} fieldKey="feature1" label="특징 1" value={data.feature1} onChange={v => onUpdate({ ...data, feature1: v })} placeholder="예: 10년 이상 성악 전공" />
+        <EditableInput {...fp} fieldKey="feature2" label="특징 2" value={data.feature2} onChange={v => onUpdate({ ...data, feature2: v })} placeholder="예: 발성 교정 전문" />
+        <EditableInput {...fp} fieldKey="feature3" label="특징 3" value={data.feature3} onChange={v => onUpdate({ ...data, feature3: v })} placeholder="예: 초보자도 3개월 안에 발표 가능" />
       </MissionCard>
 
       {/* 미션 ③ 한 문장 */}
       <MissionCard title="미션 ③ 나를 기억시키는 한 문장">
-        <EditableTextarea fieldKey="oneSentenceBrand" label="나를 기억시키는 한 문장" value={data.oneSentenceBrand} onChange={v => onUpdate({ ...data, oneSentenceBrand: v })} placeholder="예: 발성이 고민인 직장인의 목소리를 3개월 안에 바꿔주는 성악 강사" rows={2} />
+        <EditableTextarea
+          {...fp}
+          fieldKey="oneSentenceBrand"
+          label="나를 기억시키는 한 문장"
+          value={data.oneSentenceBrand}
+          onChange={v => onUpdate({ ...data, oneSentenceBrand: v })}
+          placeholder="예: 발성이 고민인 직장인의 목소리를 3개월 안에 바꿔주는 성악 강사"
+          rows={2}
+        />
       </MissionCard>
 
       {/* 미션 ④ 로고 */}
@@ -164,6 +248,7 @@ export default function Week2Form({
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4">
           {LOGO_BRIEF_QUESTIONS.map((q) => (
             <EditableInput
+              {...fp}
               key={q.id}
               fieldKey={`logo_${q.id}`}
               label={q.label}
@@ -174,7 +259,13 @@ export default function Week2Form({
         </div>
       </MissionCard>
 
-      <CompleteButton isCompleted={isCompleted} isLocked={isLocked} weekLabel="2주차" onComplete={onComplete} onUncomplete={onUncomplete} />
+      <CompleteButton
+        isCompleted={isCompleted}
+        isLocked={isLocked}
+        weekLabel="2주차"
+        onComplete={onComplete}
+        onUncomplete={onUncomplete}
+      />
     </div>
   );
 }
